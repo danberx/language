@@ -1,0 +1,3 @@
+C:/Users/danbe/CLionProjects/Language/cmake-build-debug/CMakeFiles/Language.dir
+C:/Users/danbe/CLionProjects/Language/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/danbe/CLionProjects/Language/cmake-build-debug/CMakeFiles/rebuild_cache.dir
