@@ -6,6 +6,7 @@ class Bor {
 public:
     Bor(std::string& path);
     bool have_word(std::string& s);
+    ~Bor();
 private:
     struct node {
         std::vector<node*> next;
@@ -14,6 +15,7 @@ private:
     };
     node* root;
     void add_string(std::string& s);
+    void delete_node(node* v);
 };
 
 void Bor::add_string(std::string &s) {
@@ -61,4 +63,17 @@ bool Bor::have_word(std::string &s) {
         v = v->next[c];
     }
     return v->is_terminal;
+}
+
+void Bor::delete_node(node* v) {
+    for (int i = 0; i < v->next.size(); ++i) {
+        if (v->next[i] != nullptr) {
+            delete_node(v->next[i]);
+        }
+    }
+    delete v;
+}
+
+Bor::~Bor() {
+    delete_node(root);
 }
