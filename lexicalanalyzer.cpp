@@ -1,6 +1,7 @@
 #include "lexicalanalyzer.hpp"
+#include <iostream>
 
-LexicalAnalyzer::LexicalAnalyzer(const std::string &path1, const std::string &path2): bor(path1),
+LexicalAnalyzer::LexicalAnalyzer(const std::string &path1, const std::string &path2): bor(path1), cur_lexeme(0),
     operations{"+", "-", "=", ">=", ">", "<", "<=", "++", "--", "&", "|",
                "*=", "+=", "-=", "/=", "%=", "%", "&&", "||", "/", "!", "!=", "=="} {
     GetLexemes(path2);
@@ -17,28 +18,28 @@ void LexicalAnalyzer::GetLexemes(const std::string &path) {
     file.read(buffer, length);
 
     for (int i = 0; i <= length;) {
-        if (i < length && IsOperation(std::to_string(buffer[i] + buffer[i + 1]))) {
-            lexemes.emplace_back(std::to_string(buffer[i] + buffer[i + 1]), LexemeType::Operation, cnt_line_feed);
+        if (i < length && IsOperation(std::string(1, buffer[i]) + std::string(1, buffer[i + 1]))) {
+            lexemes.emplace_back(std::string(1, buffer[i]) + std::string(1, buffer[i + 1]), LexemeType::Operation, cnt_line_feed);
             i += 2;
         }
-        else if (IsOperation(std::to_string(buffer[i]))) {
-            lexemes.emplace_back(std::to_string(buffer[i]), LexemeType::Operation, cnt_line_feed);
+        else if (IsOperation(std::string(1, buffer[i]))) {
+            lexemes.emplace_back(std::string(1, buffer[i]), LexemeType::Operation, cnt_line_feed);
             i++;
         }
-        else if (IsPunctuation(std::to_string(buffer[i]))) {
-            lexemes.emplace_back(std::to_string(buffer[i]), LexemeType::Punctuation, cnt_line_feed);
+        else if (IsPunctuation(std::string(1, buffer[i]))) {
+            lexemes.emplace_back(std::string(1, buffer[i]), LexemeType::Punctuation, cnt_line_feed);
             i++;
         }
-        else if (IsComa(std::to_string(buffer[i]))) {
-            lexemes.emplace_back(std::to_string(buffer[i]), LexemeType::Comma, cnt_line_feed);
+        else if (IsComa(std::string(1, buffer[i]))) {
+            lexemes.emplace_back(std::string(1, buffer[i]), LexemeType::Comma, cnt_line_feed);
             i++;
         }
-        else if (IsPoint(std::to_string(buffer[i]))) {
-            lexemes.emplace_back(std::to_string(buffer[i]), LexemeType::Point, cnt_line_feed);
+        else if (IsPoint(std::string(1, buffer[i]))) {
+            lexemes.emplace_back(std::string(1, buffer[i]), LexemeType::Point, cnt_line_feed);
             i++;
         }
-        else if (IsBracket(std::to_string(buffer[i]))) {
-            lexemes.emplace_back(std::to_string(buffer[i]), LexemeType::Bracket, cnt_line_feed);
+        else if (IsBracket(std::string(1, buffer[i]))) {
+            lexemes.emplace_back(std::string(1, buffer[i]), LexemeType::Bracket, cnt_line_feed);
             i++;
         }
         else if (isdigit(buffer[i])) {
@@ -80,6 +81,7 @@ void LexicalAnalyzer::GetLexemes(const std::string &path) {
                 }
                 i++;
             }
+            i++;
             if (ok) {
                 lexemes.emplace_back(cur, LexemeType::StringLiteral, cnt_line_feed);
             }
@@ -94,17 +96,20 @@ void LexicalAnalyzer::GetLexemes(const std::string &path) {
             cnt_line_feed++;
             i++;
         }
-        else {
-            std::string str = "";
+        else if (isdigit(buffer[i]) || isalpha(buffer[i])) {
+            std::string cur = "";
             while (isdigit(buffer[i]) || isalpha(buffer[i])) {
-                str += buffer[i];
+                cur += buffer[i];
                 i++;
             }
-            if (IsServiceWord(str)) {
-                lexemes.emplace_back(str, LexemeType::ServiceWord, cnt_line_feed);
+            if (IsServiceWord(cur)) {
+                lexemes.emplace_back(cur, LexemeType::ServiceWord, cnt_line_feed);
             } else {
-                lexemes.emplace_back(str, LexemeType::Identifier, cnt_line_feed);
+                lexemes.emplace_back(cur, LexemeType::Identifier, cnt_line_feed);
             }
+        }
+        else {
+            lexemes.emplace_back(std::string(1, buffer[i++]), LexemeType::Other, cnt_line_feed);
         }
     }
     delete[] buffer;
@@ -192,4 +197,20 @@ bool LexicalAnalyzer::IsInt(const std::string &s) {
         return 0;
     }
     return 1;
+}
+
+Lexeme LexicalAnalyzer::GetLex() {
+    if (cur_lexeme == lexemes.size()) {
+        return Lexeme("END", LexemeType::Other, -1);
+    }
+    return lexemes[cur_lexeme++];
+}
+
+void LexicalAnalyzer::print_lexemes() {
+    Lexeme cur = GetLex();
+    while (cur.GetLine() != -1) {
+        std::cout << "Lexeme " << cur.GetContent() << " at line " << cur.GetLine() << " have type " << static_cast<int>(cur.GetType()) << "\n";
+        cur = GetLex();
+    }
+    return;
 }

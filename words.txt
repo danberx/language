@@ -1,7 +1,2 @@
-abcd
-a
-\n
-example
-exe
-bcdded
-a
+int
+string

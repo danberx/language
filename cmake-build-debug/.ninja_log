@@ -12,3 +12,10 @@
 7	4015	7514745252503310	CMakeFiles/language.dir/main.cpp.obj	bcba3203676f5272
 18	4972	7514745261967610	CMakeFiles/language.dir/lexicalanalyzer.cpp.obj	df5297559439b846
 4972	5551	7514745267746091	language.exe	f3a65c406e4b8cd9
+5	1431	7514748532874277	CMakeFiles/language.dir/main.cpp.obj	bcba3203676f5272
+1432	1973	7514748538207437	language.exe	f3a65c406e4b8cd9
+21	965	7514760398847549	CMakeFiles/language.dir/lexeme.cpp.obj	df5d6d575dcfbed3
+9	1474	7514760403914656	CMakeFiles/language.dir/main.cpp.obj	bcba3203676f5272
+5	1347	7514760910450236	CMakeFiles/language.dir/main.cpp.obj	bcba3203676f5272
+8	1968	7514762184423526	CMakeFiles/language.dir/lexicalanalyzer.cpp.obj	df5297559439b846
+1968	2320	7514762187962416	language.exe	f3a65c406e4b8cd9
