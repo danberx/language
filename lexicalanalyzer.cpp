@@ -68,6 +68,7 @@ void LexicalAnalyzer::GetLexemes(const std::string &path) {
             cur = "";
             i++;
             bool ok = true;
+
             while (i <= length && buffer[i] != '"') {
                 if (buffer[i] == '\n') {
                     ok = false;
