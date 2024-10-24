@@ -82,6 +82,9 @@
 		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/bor.hpp">
 			<Option target="language"/>
 		</Unit>
+		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/code.txt">
+			<Option target="language"/>
+		</Unit>
 		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/lexeme.cpp">
 			<Option target="language"/>
 		</Unit>
