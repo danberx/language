@@ -55,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "c:/Users/danbe/CLionProjects/Language/cmake-build-debug"
+			"value" : "c:/Users/danbe/CLionProjects/language/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -623,7 +623,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "C:/Users/danbe/CLionProjects/Language"
+			"value" : "C:/Users/danbe/CLionProjects/language"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -1239,7 +1239,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/danbe/CLionProjects/Language/cmake-build-debug"
+			"value" : "C:/Users/danbe/CLionProjects/language/cmake-build-debug"
 		},
 		{
 			"name" : "Language_IS_TOP_LEVEL",
@@ -1263,7 +1263,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "C:/Users/danbe/CLionProjects/Language"
+			"value" : "C:/Users/danbe/CLionProjects/language"
 		}
 	],
 	"kind" : "cache",

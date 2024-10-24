@@ -3,4 +3,4 @@ project(Language)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(Language main.cpp lexemes.h words.txt bor.h)
+add_executable(language main.cpp words.txt bor.cpp bor.hpp lexeme.hpp lexeme.cpp lexemetype.hpp lexicalanalyzer.cpp lexicalanalyzer.hpp)
