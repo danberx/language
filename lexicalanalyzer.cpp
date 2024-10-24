@@ -46,6 +46,7 @@ void LexicalAnalyzer::GetLexemes(const std::string &path) {
         }
         else if (buffer[i] == '"') {
 
+
         }
         else if (buffer[i] == ' ') {
             i++;
@@ -55,10 +56,12 @@ void LexicalAnalyzer::GetLexemes(const std::string &path) {
             i++;
         }
         else {
+            while (buffer[i++]) {
 
+            }
         }
     }
-
+"asdas"
     delete[] buffer;
 }
 
