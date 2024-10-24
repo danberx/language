@@ -54,7 +54,7 @@ bool LexicalAnalyzer::IsOperation(const std::string &s) {
 }
 
 bool LexicalAnalyzer::IsPunctuation(const std::string &s) {
-    if (s == "}" || s == "{" || s == ";")
+    if (s == "}" || s == "{" || s == ";" || )
         return 1;
     return 0;
 }
@@ -68,6 +68,12 @@ bool LexicalAnalyzer::IsComa(const std::string &s) {
 
 bool LexicalAnalyzer::IsPoint(const std::string &s) {
     if (s == ".")
+        return 1;
+    return 0;
+}
+
+bool LexicalAnalyzer::IsBracket(const std::string &s) {
+    if (s == "(" || s == ")")
         return 1;
     return 0;
 }

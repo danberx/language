@@ -17,6 +17,7 @@ private:
     bool IsPunctuation(const std::string& s);
     bool IsComa(const std::string& s);
     bool IsPoint(const std::string& s);
+    bool IsBracket(const std::string& s);
     bool IsDouble(const std::string& s);
     bool IsInt(const std::string& s);
     Bor bor;

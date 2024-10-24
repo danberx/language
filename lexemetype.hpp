@@ -8,5 +8,6 @@ enum class LexemeType {
     Operation,
     Punctuation,
     Point,
-    Comma
+    Comma,
+    Bracket
 };
