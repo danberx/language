@@ -42,14 +42,49 @@ void LexicalAnalyzer::GetLexemes(const std::string &path) {
             i++;
         }
         else if (isdigit(buffer[i])) {
-
+            std::string cur;
+            cur = "";
+            bool ok = true;
+            bool point = false;
+            while (i <= length && (isdigit(buffer[i]) || buffer[i] == '.')) {
+                if (buffer[i] == '.') {
+                    if (point) {
+                        ok = false;
+                    } else {
+                        point = true;
+                    }
+                }
+                cur += bufer[i++];
+            }
+            if (ok) {
+                lexemes.emplace_back(cur, LexemeType::Literal, cnt_line_feed);
+            } else {
+                lexemes.emplace_back(cur, LexemeType::Other, cnt_line_feed);
+            }
         }
         else if (buffer[i] == '"') {
             std::string cur;
             cur = "";
             i++;
+            bool ok = true;
             while (i <= length && buffer[i] != '"') {
-                //cur +=
+                if (buffer[i] == '\n') {
+                    ok = false;
+                    break;
+                }
+                cur += buffer[i];
+                if (cur.size() > 1 && cur[cur.size() - 2] == '\\' && cur[cur.size() - 1] == 'n') {
+                    cur.pop_back();
+                    cur.pop_back();
+                    cur += '\n';
+                }
+                i++;
+            }
+            if (ok) {
+                lexemes.emplace_back(cur, LexemeType::StringLiteral, cnt_line_feed);
+            }
+            else {
+                lexemes.emplace_back(cur, LexemeType::Other, cnt_line_feed);
             }
         }
         else if (buffer[i] == ' ') {
@@ -60,10 +95,18 @@ void LexicalAnalyzer::GetLexemes(const std::string &path) {
             i++;
         }
         else {
-
+            std::string str = "";
+            while (isdigit(buffer[i]) || isalpha(buffer[i])) {
+                str += buffer[i];
+                i++;
+            }
+            if (IsServiceWord(str)) {
+                lexemes.emplace_back(str, LexemeType::ServiceWord, cnt_line_feed);
+            } else {
+                lexemes.emplace_back(str, LexemeType::Identifier, cnt_line_feed);
+            }
         }
     }
-
     delete[] buffer;
 }
 

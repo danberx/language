@@ -9,5 +9,6 @@ enum class LexemeType {
     Punctuation,
     Point,
     Comma,
-    Bracket
+    Bracket,
+    Other
 };
