@@ -24,6 +24,9 @@
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
+					<Add directory="/Users/nikitaserakov/Desktop/FTL__/language/src/bor"/>
+					<Add directory="/Users/nikitaserakov/Desktop/FTL__/language/src/txt"/>
+					<Add directory="/Users/nikitaserakov/Desktop/FTL__/language/src/lexemeanalyzer"/>
 					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include"/>
 					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
 					<Add directory="/System/Library/Frameworks"/>
@@ -43,6 +46,9 @@
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
+					<Add directory="/Users/nikitaserakov/Desktop/FTL__/language/src/bor"/>
+					<Add directory="/Users/nikitaserakov/Desktop/FTL__/language/src/txt"/>
+					<Add directory="/Users/nikitaserakov/Desktop/FTL__/language/src/lexemeanalyzer"/>
 					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include"/>
 					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
 					<Add directory="/System/Library/Frameworks"/>
@@ -76,34 +82,37 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/bor.cpp">
-			<Option target="language"/>
-		</Unit>
-		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/bor.hpp">
-			<Option target="language"/>
-		</Unit>
 		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/code.txt">
 			<Option target="language"/>
 		</Unit>
-		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/lexeme.cpp">
+		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/src/bor/bor.cpp">
 			<Option target="language"/>
 		</Unit>
-		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/lexeme.hpp">
+		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/src/bor/bor.hpp">
 			<Option target="language"/>
 		</Unit>
-		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/lexemetype.hpp">
+		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/src/lexemeanalyzer/lexeme.cpp">
 			<Option target="language"/>
 		</Unit>
-		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/lexicalanalyzer.cpp">
+		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/src/lexemeanalyzer/lexeme.hpp">
 			<Option target="language"/>
 		</Unit>
-		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/lexicalanalyzer.hpp">
+		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/src/lexemeanalyzer/lexemetype.hpp">
 			<Option target="language"/>
 		</Unit>
-		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/main.cpp">
+		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/src/lexemeanalyzer/lexicalanalyzer.cpp">
 			<Option target="language"/>
 		</Unit>
-		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/words.txt">
+		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/src/lexemeanalyzer/lexicalanalyzer.hpp">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/src/main.cpp">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/src/txt/operations.txt">
+			<Option target="language"/>
+		</Unit>
+		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/src/txt/words.txt">
 			<Option target="language"/>
 		</Unit>
 		<Unit filename="/Users/nikitaserakov/Desktop/FTL__/language/CMakeLists.txt">

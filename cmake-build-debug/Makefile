@@ -129,101 +129,101 @@ language/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/build
 .PHONY : language/fast
 
-bor.o: bor.cpp.o
-.PHONY : bor.o
+src/bor/bor.o: src/bor/bor.cpp.o
+.PHONY : src/bor/bor.o
 
 # target to build an object file
-bor.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/bor.cpp.o
-.PHONY : bor.cpp.o
+src/bor/bor.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/src/bor/bor.cpp.o
+.PHONY : src/bor/bor.cpp.o
 
-bor.i: bor.cpp.i
-.PHONY : bor.i
+src/bor/bor.i: src/bor/bor.cpp.i
+.PHONY : src/bor/bor.i
 
 # target to preprocess a source file
-bor.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/bor.cpp.i
-.PHONY : bor.cpp.i
+src/bor/bor.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/src/bor/bor.cpp.i
+.PHONY : src/bor/bor.cpp.i
 
-bor.s: bor.cpp.s
-.PHONY : bor.s
+src/bor/bor.s: src/bor/bor.cpp.s
+.PHONY : src/bor/bor.s
 
 # target to generate assembly for a file
-bor.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/bor.cpp.s
-.PHONY : bor.cpp.s
+src/bor/bor.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/src/bor/bor.cpp.s
+.PHONY : src/bor/bor.cpp.s
 
-lexeme.o: lexeme.cpp.o
-.PHONY : lexeme.o
+src/lexemeanalyzer/lexeme.o: src/lexemeanalyzer/lexeme.cpp.o
+.PHONY : src/lexemeanalyzer/lexeme.o
 
 # target to build an object file
-lexeme.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/lexeme.cpp.o
-.PHONY : lexeme.cpp.o
+src/lexemeanalyzer/lexeme.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/src/lexemeanalyzer/lexeme.cpp.o
+.PHONY : src/lexemeanalyzer/lexeme.cpp.o
 
-lexeme.i: lexeme.cpp.i
-.PHONY : lexeme.i
+src/lexemeanalyzer/lexeme.i: src/lexemeanalyzer/lexeme.cpp.i
+.PHONY : src/lexemeanalyzer/lexeme.i
 
 # target to preprocess a source file
-lexeme.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/lexeme.cpp.i
-.PHONY : lexeme.cpp.i
+src/lexemeanalyzer/lexeme.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/src/lexemeanalyzer/lexeme.cpp.i
+.PHONY : src/lexemeanalyzer/lexeme.cpp.i
 
-lexeme.s: lexeme.cpp.s
-.PHONY : lexeme.s
+src/lexemeanalyzer/lexeme.s: src/lexemeanalyzer/lexeme.cpp.s
+.PHONY : src/lexemeanalyzer/lexeme.s
 
 # target to generate assembly for a file
-lexeme.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/lexeme.cpp.s
-.PHONY : lexeme.cpp.s
+src/lexemeanalyzer/lexeme.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/src/lexemeanalyzer/lexeme.cpp.s
+.PHONY : src/lexemeanalyzer/lexeme.cpp.s
 
-lexicalanalyzer.o: lexicalanalyzer.cpp.o
-.PHONY : lexicalanalyzer.o
+src/lexemeanalyzer/lexicalanalyzer.o: src/lexemeanalyzer/lexicalanalyzer.cpp.o
+.PHONY : src/lexemeanalyzer/lexicalanalyzer.o
 
 # target to build an object file
-lexicalanalyzer.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/lexicalanalyzer.cpp.o
-.PHONY : lexicalanalyzer.cpp.o
+src/lexemeanalyzer/lexicalanalyzer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/src/lexemeanalyzer/lexicalanalyzer.cpp.o
+.PHONY : src/lexemeanalyzer/lexicalanalyzer.cpp.o
 
-lexicalanalyzer.i: lexicalanalyzer.cpp.i
-.PHONY : lexicalanalyzer.i
+src/lexemeanalyzer/lexicalanalyzer.i: src/lexemeanalyzer/lexicalanalyzer.cpp.i
+.PHONY : src/lexemeanalyzer/lexicalanalyzer.i
 
 # target to preprocess a source file
-lexicalanalyzer.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/lexicalanalyzer.cpp.i
-.PHONY : lexicalanalyzer.cpp.i
+src/lexemeanalyzer/lexicalanalyzer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/src/lexemeanalyzer/lexicalanalyzer.cpp.i
+.PHONY : src/lexemeanalyzer/lexicalanalyzer.cpp.i
 
-lexicalanalyzer.s: lexicalanalyzer.cpp.s
-.PHONY : lexicalanalyzer.s
+src/lexemeanalyzer/lexicalanalyzer.s: src/lexemeanalyzer/lexicalanalyzer.cpp.s
+.PHONY : src/lexemeanalyzer/lexicalanalyzer.s
 
 # target to generate assembly for a file
-lexicalanalyzer.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/lexicalanalyzer.cpp.s
-.PHONY : lexicalanalyzer.cpp.s
+src/lexemeanalyzer/lexicalanalyzer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/src/lexemeanalyzer/lexicalanalyzer.cpp.s
+.PHONY : src/lexemeanalyzer/lexicalanalyzer.cpp.s
 
-main.o: main.cpp.o
-.PHONY : main.o
+src/main.o: src/main.cpp.o
+.PHONY : src/main.o
 
 # target to build an object file
-main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/main.cpp.o
-.PHONY : main.cpp.o
+src/main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/src/main.cpp.o
+.PHONY : src/main.cpp.o
 
-main.i: main.cpp.i
-.PHONY : main.i
+src/main.i: src/main.cpp.i
+.PHONY : src/main.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/main.cpp.i
-.PHONY : main.cpp.i
+src/main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/src/main.cpp.i
+.PHONY : src/main.cpp.i
 
-main.s: main.cpp.s
-.PHONY : main.s
+src/main.s: src/main.cpp.s
+.PHONY : src/main.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/main.cpp.s
-.PHONY : main.cpp.s
+src/main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/src/main.cpp.s
+.PHONY : src/main.cpp.s
 
 # Help Target
 help:
@@ -234,18 +234,18 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... language"
-	@echo "... bor.o"
-	@echo "... bor.i"
-	@echo "... bor.s"
-	@echo "... lexeme.o"
-	@echo "... lexeme.i"
-	@echo "... lexeme.s"
-	@echo "... lexicalanalyzer.o"
-	@echo "... lexicalanalyzer.i"
-	@echo "... lexicalanalyzer.s"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... src/bor/bor.o"
+	@echo "... src/bor/bor.i"
+	@echo "... src/bor/bor.s"
+	@echo "... src/lexemeanalyzer/lexeme.o"
+	@echo "... src/lexemeanalyzer/lexeme.i"
+	@echo "... src/lexemeanalyzer/lexeme.s"
+	@echo "... src/lexemeanalyzer/lexicalanalyzer.o"
+	@echo "... src/lexemeanalyzer/lexicalanalyzer.i"
+	@echo "... src/lexemeanalyzer/lexicalanalyzer.s"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
 .PHONY : help
 
 

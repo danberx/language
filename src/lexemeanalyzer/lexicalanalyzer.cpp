@@ -1,10 +1,9 @@
 #include "lexicalanalyzer.hpp"
 #include <iostream>
 
-LexicalAnalyzer::LexicalAnalyzer(const std::string &path1, const std::string &path2): bor(path1), cur_lexeme(0),
-    operations{"+", "-", "=", ">=", ">", "<", "<=", "++", "--", "&", "|",
-               "*=", "+=", "-=", "/=", "%=", "%", "&&", "||", "/", "!", "!=", "=="} {
-    GetLexemes(path2);
+LexicalAnalyzer::LexicalAnalyzer(const std::string &path1, const std::string &path2, const std::string &path3):
+    bor_service_words(path1), bor_operations(path2), cur_lexeme(0) {
+    GetLexemes(path3);
 }
 
 void LexicalAnalyzer::GetLexemes(const std::string &path) {
@@ -121,7 +120,7 @@ void LexicalAnalyzer::GetLexemes(const std::string &path) {
 }
 
 bool LexicalAnalyzer::IsServiceWord(const std::string &s) {
-    return bor.have_word(s);
+    return bor_service_words.have_word(s);
 }
 
 bool LexicalAnalyzer::IsIdentifier(const std::string &s) {
@@ -146,10 +145,7 @@ bool LexicalAnalyzer::IsStringLiteral(const std::string &s) {
 }
 
 bool LexicalAnalyzer::IsOperation(const std::string &s) {
-    for (auto& operation : operations)
-        if (s == operation)
-            return 1;
-    return 0;
+    return bor_operations.have_word(s);
 }
 
 bool LexicalAnalyzer::IsPunctuation(const std::string &s) {

@@ -11,6 +11,7 @@ Bor::Bor(const std::string& path) {
     buffer[length] = '\n';
     file.read(buffer, length);
     std::string cur;
+
     cur = "";
     for (int i =0; i <= length; ++i) {
         if (buffer[i] == '\n') {

@@ -14,6 +14,15 @@
 # EXTERNAL cache entries
 ########################
 
+//Value Computed by CMake
+BorLib_BINARY_DIR:STATIC=/Users/nikitaserakov/Desktop/FTL__/language/cmake-build-debug/src/bor
+
+//Value Computed by CMake
+BorLib_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+BorLib_SOURCE_DIR:STATIC=/Users/nikitaserakov/Desktop/FTL__/language/src/bor
+
 //Path to a program.
 CMAKE_ADDR2LINE:FILEPATH=CMAKE_ADDR2LINE-NOTFOUND
 
@@ -229,6 +238,15 @@ Language_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
 Language_SOURCE_DIR:STATIC=/Users/nikitaserakov/Desktop/FTL__/language
+
+//Value Computed by CMake
+LexemeAnalyzerLib_BINARY_DIR:STATIC=/Users/nikitaserakov/Desktop/FTL__/language/cmake-build-debug/src/lexemeanalyzer
+
+//Value Computed by CMake
+LexemeAnalyzerLib_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+LexemeAnalyzerLib_SOURCE_DIR:STATIC=/Users/nikitaserakov/Desktop/FTL__/language/src/lexemeanalyzer
 
 //Path to a program.
 ProcessorCount_cmd_sysctl:FILEPATH=/usr/sbin/sysctl

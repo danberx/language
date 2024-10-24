@@ -5,7 +5,7 @@
 
 class LexicalAnalyzer {
 public:
-    LexicalAnalyzer(const std::string &path1, const std::string &path2);
+    LexicalAnalyzer(const std::string &path1, const std::string &path2, const std::string &path3);
     Lexeme GetLex();
     void print_lexemes();
 private:
@@ -21,8 +21,7 @@ private:
     bool IsBracket(const std::string& s);
     bool IsDouble(const std::string& s);
     bool IsInt(const std::string& s);
-    Bor bor;
-    std::vector<std::string> operations;
+    Bor bor_service_words, bor_operations;
     std::vector<Lexeme> lexemes;
     int cur_lexeme;
 };
