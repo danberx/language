@@ -56,12 +56,18 @@ void LexicalAnalyzer::GetLexemes(const std::string &path) {
             i++;
         }
         else {
-            while (buffer[i++]) {
-
+            std::string str = "";
+            while (isdigit(buffer[i]) || isalpha(buffer[i])) {
+                str += buffer[i];
+                i++;
+            }
+            if (IsServiceWord(str)) {
+                lexemes.emplace_back(str, LexemeType::ServiceWord, cnt_line_feed);
+            } else {
+                lexemes.emplace_back(str, LexemeType::Identifier, cnt_line_feed);
             }
         }
     }
-"asdas"
     delete[] buffer;
 }
 
