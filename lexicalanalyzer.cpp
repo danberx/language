@@ -68,21 +68,25 @@ void LexicalAnalyzer::GetLexemes(const std::string &path) {
             cur = "";
             i++;
             bool ok = true;
-
-            while (i <= length && buffer[i] != '"') {
+            for (; i <= length; i++) {
                 if (buffer[i] == '\n') {
                     ok = false;
                     break;
                 }
-                cur += buffer[i];
-                if (cur.size() > 1 && cur[cur.size() - 2] == '\\' && cur[cur.size() - 1] == 'n') {
-                    cur.pop_back();
-                    cur.pop_back();
-                    cur += '\n';
+                if (buffer[i] == '"' && !cur.empty() && cur.back() == '\\') {
+                    cur.back() = '"';
                 }
-                i++;
+                else if (buffer[i] == '"') {
+                    i++;
+                    break;
+                }
+                else if (buffer[i] == 'n' && !cur.empty() && cur.back() == '\\') {
+                    cur.back() = '\n';
+                }
+                else {
+                    cur.push_back(buffer[i]);
+                }
             }
-            i++;
             if (ok) {
                 lexemes.emplace_back(cur, LexemeType::StringLiteral, cnt_line_feed);
             }

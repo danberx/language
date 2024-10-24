@@ -1,1 +1,2 @@
-.12
+string a = "abc\n\""
+a += "abc";
