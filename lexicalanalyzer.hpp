@@ -6,7 +6,8 @@
 class LexicalAnalyzer {
 public:
     LexicalAnalyzer(const std::string &path1, const std::string &path2);
-    Lexeme GetLex() const;
+    Lexeme GetLex();
+    void print_lexemes();
 private:
     void GetLexemes(const std::string &path);
     bool IsServiceWord(const std::string& s);
@@ -23,4 +24,5 @@ private:
     Bor bor;
     std::vector<std::string> operations;
     std::vector<Lexeme> lexemes;
+    int cur_lexeme;
 };

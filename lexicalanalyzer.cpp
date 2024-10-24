@@ -1,6 +1,7 @@
 #include "lexicalanalyzer.hpp"
+#include <iostream>
 
-LexicalAnalyzer::LexicalAnalyzer(const std::string &path1, const std::string &path2): bor(path1),
+LexicalAnalyzer::LexicalAnalyzer(const std::string &path1, const std::string &path2): bor(path1), cur_lexeme(0),
     operations{"+", "-", "=", ">=", ">", "<", "<=", "++", "--", "&", "|",
                "*=", "+=", "-=", "/=", "%=", "%", "&&", "||", "/", "!", "!=", "=="} {
     GetLexemes(path2);
@@ -192,4 +193,20 @@ bool LexicalAnalyzer::IsInt(const std::string &s) {
         return 0;
     }
     return 1;
+}
+
+Lexeme LexicalAnalyzer::GetLex() {
+    if (cur_lexeme == lexemes.size()) {
+        return Lexeme("END", LexemeType::Other, -1);
+    }
+    return lexemes[cur_lexeme++];
+}
+
+void LexicalAnalyzer::print_lexemes() {
+    Lexeme cur = GetLex();
+    while (cur.GetLine() != -1) {
+        std::cout << "Lexeme" << cur.GetContent() << " at line " << cur.GetLine() << " have type " << static_cast<int>(cur.GetType()) << "\n";
+        cur = GetLex();
+    }
+    return;
 }
