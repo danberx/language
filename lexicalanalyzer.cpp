@@ -45,7 +45,12 @@ void LexicalAnalyzer::GetLexemes(const std::string &path) {
 
         }
         else if (buffer[i] == '"') {
-
+            std::string cur;
+            cur = "";
+            i++;
+            while (i <= length && buffer[i] != '"') {
+                //cur +=
+            }
         }
         else if (buffer[i] == ' ') {
             i++;

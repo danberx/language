@@ -1,6 +1,6 @@
 abcd
 a
-
+\n
 example
 exe
 bcdded

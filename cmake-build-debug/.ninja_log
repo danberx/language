@@ -6,3 +6,8 @@
 17	2313	7514590481947713	CMakeFiles/language.dir/bor.cpp.obj	f9b70b5ccba38a57
 14	2176	7514591041059461	CMakeFiles/language.dir/lexicalanalyzer.cpp.obj	df5297559439b846
 2177	2675	7514591045741721	language.exe	f3a65c406e4b8cd9
+6	1572	7514600009575089	CMakeFiles/language.dir/main.cpp.obj	bcba3203676f5272
+7	3109	7514600180728873	CMakeFiles/language.dir/lexicalanalyzer.cpp.obj	df5297559439b846
+3114	3370	7514600183210096	language.exe	f3a65c406e4b8cd9
+5	1386	7514600347887401	CMakeFiles/language.dir/main.cpp.obj	bcba3203676f5272
+1387	1831	7514600352279072	language.exe	f3a65c406e4b8cd9
