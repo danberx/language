@@ -10,12 +10,53 @@ void LexicalAnalyzer::GetLexemes(const std::string &path) {
     std::ifstream file;
     file.open(path, std::ios::binary);
     file.seekg(0, std::ios::end);
-    long long length = file.tellg();
+    long long length = file.tellg(), cnt_line_feed = 1;;
     file.seekg(0, std::ios::beg);
-    char* buffer = new char[length];
+    char* buffer = new char[length + 1];
+    buffer[length] = '\n';
     file.read(buffer, length);
 
-    for (int i = 0; i < length; ++i) {
+    for (int i = 0; i <= length;) {
+        if (i < length && IsOperation(std::to_string(buffer[i] + buffer[i + 1]))) {
+            lexemes.emplace_back(std::to_string(buffer[i] + buffer[i + 1]), LexemeType::Operation, cnt_line_feed);
+            i += 2;
+        }
+        else if (IsOperation(std::to_string(buffer[i]))) {
+            lexemes.emplace_back(std::to_string(buffer[i]), LexemeType::Operation, cnt_line_feed);
+            i++;
+        }
+        else if (IsPunctuation(std::to_string(buffer[i]))) {
+            lexemes.emplace_back(std::to_string(buffer[i]), LexemeType::Punctuation, cnt_line_feed);
+            i++;
+        }
+        else if (IsComa(std::to_string(buffer[i]))) {
+            lexemes.emplace_back(std::to_string(buffer[i]), LexemeType::Comma, cnt_line_feed);
+            i++;
+        }
+        else if (IsPoint(std::to_string(buffer[i]))) {
+            lexemes.emplace_back(std::to_string(buffer[i]), LexemeType::Point, cnt_line_feed);
+            i++;
+        }
+        else if (IsBracket(std::to_string(buffer[i]))) {
+            lexemes.emplace_back(std::to_string(buffer[i]), LexemeType::Bracket, cnt_line_feed);
+            i++;
+        }
+        else if (isdigit(buffer[i])) {
+
+        }
+        else if (buffer[i] == '"') {
+
+        }
+        else if (buffer[i] == ' ') {
+            i++;
+        }
+        else if (buffer[i] == '\n') {
+            cnt_line_feed++;
+            i++;
+        }
+        else {
+
+        }
     }
 
     delete[] buffer;
@@ -54,7 +95,7 @@ bool LexicalAnalyzer::IsOperation(const std::string &s) {
 }
 
 bool LexicalAnalyzer::IsPunctuation(const std::string &s) {
-    if (s == "}" || s == "{" || s == ";" || )
+    if (s == "}" || s == "{" || s == ";")
         return 1;
     return 0;
 }
