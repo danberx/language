@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <map>
 
 class Bor {
 public:
@@ -11,9 +12,9 @@ public:
     ~Bor();
 private:
     struct node {
-        std::vector<node*> next;
+        std::map<char, node*> next;
         bool is_terminal;
-        node(): next(std::vector<node*>(26, nullptr)), is_terminal(false) {}
+        node(): next({}), is_terminal(false) {}
     };
     node* root;
     void add_string(const std::string& s);

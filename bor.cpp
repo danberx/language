@@ -26,9 +26,8 @@ Bor::Bor(const std::string& path) {
 bool Bor::have_word(const std::string &s) {
     node* v = root;
     for (auto c : s) {
-        c -= 'a';
-        if (v->next[c] == nullptr) {
-            return 0;
+        if (v->next.find(c) == v->next.end()) {
+            return false;
         }
         v = v->next[c];
     }
@@ -40,10 +39,8 @@ Bor::~Bor() {
 }
 
 void Bor::delete_node(node* v) {
-    for (int i = 0; i < v->next.size(); ++i) {
-        if (v->next[i] != nullptr) {
-            delete_node(v->next[i]);
-        }
+    for (auto el: v->next) {
+        delete_node(el.second);
     }
     delete v;
 }
@@ -51,8 +48,7 @@ void Bor::delete_node(node* v) {
 void Bor::add_string(const std::string &s) {
     node* v = root;
     for (char c: s) {
-        c -= 'a';
-        if (!v->next[c]) {
+        if (v->next.find(c) == v->next.end()) {
             v->next[c] = new node;
         }
         v = v->next[c];
