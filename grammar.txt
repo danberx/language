@@ -1,4 +1,40 @@
-<programm>::= <var> <programm> | <function> <programm> | <main>
+<programm> ::= <var> <programm> | <function> <programm> | <main>
 <var> ::= <type> <identifier> ["=" <expression>]
 <type> ::= "int" | "double" | "string" | "bool" | "char" | "array"
-<function> ::= <type> <identifier> "(" <params> ")" <......>
+<function> ::= <function-type> <identifier> "(" <params> ")" <block>
+<function-type> ::= <type> | "void"
+<return> ::= "return" <expression>
+<params> ::= {<var>}
+<expression> ::= <assignment-exp> { "," <assignment-exp> }
+<assignment-exp> ::= <logical-or-exp> { <assignment-op> <logical-exp> }
+<assignment-op> ::= "=" | "+=" | "-=" | "*=" | "/=" | "|=" | "&=" | "^="
+<logical-or-exp> ::= <logical-and-exp> { "||" <logical-and-exp> }
+<logical-and-exp> ::= <bitwise-or-exp> { "&&" <bitwise-or-exp> }
+<bitwise-or-exp> ::= <bitwise-xor-exp> { "|" <bitwise-xor-exp> }
+<bitwise-xor-exp> ::= <bitwise-and-exp> { "^" <bitwise-and-exp> }
+<bitwise-and-exp> ::= <equal-exp> { "&" <equal-exp> }
+<equal-exp> ::= <compare-exp> { <equal-op> <compare-exp> }
+<equal-op> ::= "==" | "!="
+<compare-exp> ::= <bitwise-shift-exp> { <compare-op> <bitwise-shft-exp> }
+<compare-op> ::= "<" | ">" | ">=" | "<="
+<bitwise-shift-exp> ::= <addition-exp> { <bitwise-shift-op> <addition-exp> }
+<bitwise-shift-op> ::= "<<" | ">>"
+<addition-exp> ::= <multy-exp> { <addition-op> <multy-exp> }
+<addition-op> ::= "+" | "-"
+<multy-exp> ::= <unary-exp> { <multy-op> <unary-exp> }
+<multy-op> ::= "*" | "/" | "%"
+<unary-exp> ::= <postfix-exp> |<unary-op><unary-exp>
+<unary-op> ::= "!" | "~" | "-" | "+" | "++" | "--"
+<postfix-exp> ::= <bracket-exp> [ <postfix-op> ]
+<postfix-op> ::= "++" | "--"
+<bracket-exp> ::= "(" <expression> ")" | <identifier> | <literal>
+<input> ::= "input(" <identifier> ")"
+<output> ::= "output(" <expression> ")"
+<if> ::= "if(" <expression> ")" <block> { "elseif(" <expression> ")" <block> } [ "else" <block> ]
+<while> ::= "while(" <expression> ")" <block>
+<for> ::= "for(" <expression> ";" <expression> ";" <expression> ")" <block>
+<break> ::= "break"
+<continue> ::= "continue"
+<command> ::= <var> | <expression> | <return> | <if> | <while> | <for> | <break> | <continue> | <input> | <output> | <return>
+<block> ::= "{" { <command> } "}"
+<main> ::= <type> "main()" <block>
