@@ -1,10 +1,11 @@
 <programm> ::= <var> <programm> | <function> <programm> | <main>
 <var> ::= <type> <identifier> ["=" <expression>]
+<vars> ::= <type> <identifier> ["=" <expression>] {"," <identifier> ["=" <expression>]} ";"
 <type> ::= "int" | "double" | "string" | "bool" | "char" | "array"
 <function> ::= <function-type> <identifier> "(" <params> ")" <block>
 <function-type> ::= <type> | "void"
 <return> ::= "return" <expression>
-<params> ::= {<var>}
+<params> ::= <var> {"," <var>}
 <expression> ::= <assignment-exp> { "," <assignment-exp> }
 <assignment-exp> ::= <logical-or-exp> { <assignment-op> <logical-exp> }
 <assignment-op> ::= "=" | "+=" | "-=" | "*=" | "/=" | "|=" | "&=" | "^="
@@ -35,6 +36,6 @@
 <for> ::= "for(" <expression> ";" <expression> ";" <expression> ")" <block>
 <break> ::= "break"
 <continue> ::= "continue"
-<command> ::= <var> | <expression> | <return> | <if> | <while> | <for> | <break> | <continue> | <input> | <output> | <return>
+<command> ::= <var> | <expression> | <return> | <if> | <while> | <for> | <break> | <continue> | <input> | <output> | <return> | <vars>
 <block> ::= "{" { <command> } "}"
 <main> ::= <type> "main()" <block>
