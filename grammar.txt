@@ -1,0 +1,4 @@
+<programm>::= <var> <programm> | <function> <programm> | <main>
+<var> ::= <type> <identifier> ["=" <expression>]
+<type> ::= "int" | "double" | "string" | "bool" | "char" | "array"
+<function> ::= <type> <identifier> "(" <params> ")" <......>
