@@ -2,7 +2,7 @@
 <var> ::= <type> <identifier> ["=" <expression>]
 <vars> ::= <type> <identifier> ["=" <expression>] {"," <identifier> ["=" <expression>]} ";"
 <type> ::= "int" | "double" | "string" | "bool" | "char" | "array"
-<function> ::= <function-type> <identifier> "(" <params> ")" <block>
+<function> ::= <function-type> <identifier> "(" [<params>] ")" <block>
 <function-type> ::= <type> | "void"
 <return> ::= "return" <expression>
 <params> ::= <var> {"," <var>}
