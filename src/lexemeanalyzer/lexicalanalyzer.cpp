@@ -149,7 +149,7 @@ bool LexicalAnalyzer::IsOperation(const std::string &s) {
 }
 
 bool LexicalAnalyzer::IsPunctuation(const std::string &s) {
-    if (s == "}" || s == "{" || s == ";")
+    if (s == "}" || s == "{" || s == ";" || s == ":")
         return 1;
     return 0;
 }
