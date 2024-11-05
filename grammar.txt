@@ -1,10 +1,10 @@
-<programm> ::= <var> <programm> | <function> <programm> | <main>
+<programm> ::= <vars> <programm> | <function> <programm> | <main>
 <var> ::= <type> <identifier> ["=" <expression>]
-<vars> ::= <type> <identifier> ["=" <expression>] {"," <identifier> ["=" <expression>]} ";"
+<vars> ::= <var> {"," <identifier> ["=" <expression>]} ";"
 <type> ::= "int" | "double" | "string" | "bool" | "char" | "array"
 <function> ::= <function-type> <identifier> "(" [<params>] ")" <block>
 <function-type> ::= <type> | "void"
-<return> ::= "return" <expression>
+<return> ::= "return" <expression> ";"
 <params> ::= <var> {"," <var>}
 <expression> ::= <assignment-exp> { "," <assignment-exp> }
 <assignment-exp> ::= <logical-or-exp> { <assignment-op> <logical-exp> }
@@ -29,13 +29,13 @@
 <postfix-exp> ::= <bracket-exp> [ <postfix-op> ]
 <postfix-op> ::= "++" | "--"
 <bracket-exp> ::= "(" <expression> ")" | <identifier> | <literal>
-<input> ::= "input(" <identifier> ")"
-<output> ::= "output(" <expression> ")"
+<input> ::= "input(" <identifier> ")" ";"
+<output> ::= "output(" <expression> ")" ";"
 <if> ::= "if(" <expression> ")" <block> { "elseif(" <expression> ")" <block> } [ "else" <block> ]
 <while> ::= "while(" <expression> ")" <block>
 <for> ::= "for(" <expression> ";" <expression> ";" <expression> ")" <block>
-<break> ::= "break"
-<continue> ::= "continue"
-<command> ::= <var> | <expression> | <return> | <if> | <while> | <for> | <break> | <continue> | <input> | <output> | <return> | <vars>
+<break> ::= "break" ";"
+<continue> ::= "continue" ";"
+<command> ::= <expression> ";" | <if> | <while> | <for> | <break> | <continue> | <input> | <output> | <return> | <vars>
 <block> ::= "{" { <command> } "}"
 <main> ::= <type> "main()" <block>
