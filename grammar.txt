@@ -1,8 +1,8 @@
 <programm> ::= <vars> <programm> | <function> <programm> | <main>
-<var> ::= <type> <identifier> ["=" <expression>]
+<var> ::= "var" <type> <identifier> ["=" <expression>]
 <vars> ::= <var> {"," <identifier> ["=" <expression>]} ";"
 <type> ::= "int" | "double" | "string" | "bool" | "char" | "array"
-<function> ::= <function-type> <identifier> "(" [<params>] ")" <block>
+<function> ::= "function" <function-type> <identifier> "(" [<params>] ")" <block>
 <function-type> ::= <type> | "void"
 <return> ::= "return" <expression> ";"
 <params> ::= <var> {"," <var>}
@@ -33,7 +33,7 @@
 <output> ::= "output(" <expression> ")" ";"
 <if> ::= "if(" <expression> ")" <block> { "elseif(" <expression> ")" <block> } [ "else" <block> ]
 <while> ::= "while(" <expression> ")" <block>
-<for> ::= "for(" <expression> ";" <expression> ";" <expression> ")" <block>
+<for> ::= "for(" [ <expression> ] ";" [ <expression> ] ";" [ <expression> ] ")" <block>
 <break> ::= "break" ";"
 <continue> ::= "continue" ";"
 <command> ::= <expression> ";" | <if> | <while> | <for> | <break> | <continue> | <input> | <output> | <return> | <vars>
