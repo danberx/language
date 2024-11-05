@@ -1,11 +1,14 @@
-<programm> ::= <vars> <programm> | <function> <programm> | <main>
-<var> ::= "var" <type> <identifier> ["=" <expression>]
-<vars> ::= <var> {"," <identifier> ["=" <expression>]} ";"
+<program> ::= <vars> <program> | <function> <program> | <main>
+
+<var> ::= "var" <type> <identifier> ["=" <assignment-expression>]
+<vars> ::= <var> {"," <identifier> ["=" <assignment-expression>]} ";"
 <type> ::= "int" | "double" | "string" | "bool" | "char" | "array"
+
 <function> ::= "function" <function-type> <identifier> "(" [<params>] ")" <block>
 <function-type> ::= <type> | "void"
 <return> ::= "return" <expression> ";"
 <params> ::= <var> {"," <var>}
+
 <expression> ::= <assignment-exp> { "," <assignment-exp> }
 <assignment-exp> ::= <logical-or-exp> { <assignment-op> <logical-exp> }
 <assignment-op> ::= "=" | "+=" | "-=" | "*=" | "/=" | "|=" | "&=" | "^="
@@ -29,15 +32,16 @@
 <postfix-exp> ::= <bracket-exp> [ <postfix-op> ]
 <postfix-op> ::= "++" | "--"
 <bracket-exp> ::= "(" <expression> ")" | <identifier> | <literal>
-<input> ::= "input(" <identifier> ")" ";"
-<output> ::= "output(" <expression> ")" ";"
-<if> ::= "if(" <expression> ")" <block> { "elseif(" <expression> ")" <block> } [ "else" <block> ]
-<while> ::= "while(" <expression> ")" <block>
-<for> ::= "for(" [ <expression> ] ";" [ <expression> ] ";" [ <expression> ] ")" <block>
+
+<input> ::= "input" "(" <identifier> ")" ";"
+<output> ::= "output" "(" <expression> ")" ";"
+<if> ::= "if" "(" <expression> ")" <block> { "elseif" "(" <expression> ")" <block> } [ "else" <block> ]
+<while> ::= "while" "(" <expression> ")" <block>
+<for> ::= "for" "(" [ <expression> ] ";" [ <expression> ] ";" [ <expression> ] ")" <block>
 <break> ::= "break" ";"
 <continue> ::= "continue" ";"
-<switch> ::= "switch" "(" <identifier> ")" "{" " <cases> "}"
+<switch> ::= "switch" "(" <identifier> ")" "{" <cases> "}"
 <cases> ::= "case" <literal> ":" <block> { "case" <literal> ":" <block> }
 <command> ::= <expression> ";" | <if> | <while> | <for> | <break> | <continue> | <input> | <output> | <return> | <vars> | <switch>
 <block> ::= "{" { <command> } "}"
-<main> ::= <type> "main()" <block>
+<main> ::= <type> "main" "(" [params] ")" <block>
