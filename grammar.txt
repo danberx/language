@@ -36,6 +36,8 @@
 <for> ::= "for(" [ <expression> ] ";" [ <expression> ] ";" [ <expression> ] ")" <block>
 <break> ::= "break" ";"
 <continue> ::= "continue" ";"
-<command> ::= <expression> ";" | <if> | <while> | <for> | <break> | <continue> | <input> | <output> | <return> | <vars>
+<switch> ::= "switch" "(" <identifier> ")" "{" " <cases> "}"
+<cases> ::= "case" <literal> ":" <block> { "case" <literal> ":" <block> }
+<command> ::= <expression> ";" | <if> | <while> | <for> | <break> | <continue> | <input> | <output> | <return> | <vars> | <switch>
 <block> ::= "{" { <command> } "}"
 <main> ::= <type> "main()" <block>
