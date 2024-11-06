@@ -21,6 +21,10 @@ class SyntacticAnalyzer {
     void Continue();
     void If();
     void While();
+    void For();
+    void Switch();
+    void Cases();
+    void Command();
 
 private:
     LexicalAnalyzer lexer;

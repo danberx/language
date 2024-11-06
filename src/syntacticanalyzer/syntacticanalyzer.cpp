@@ -84,8 +84,8 @@ void SyntacticAnalyzer::Function() {
     if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "(") {
         //throw cur_lexeme;
     }
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation && cur_lexeme.GetContent() != ")") {
+    Lexeme next = lexer.PeekLex();
+    if (next.GetType() != LexemeType::Punctuation || next.GetContent() != ")") {
         Params();
     }
     cur_lexeme = lexer.GetLex();
@@ -237,12 +237,168 @@ void SyntacticAnalyzer::While() {
     }
 }
 
-void SyntacticAnalyzer::Main() {
+void SyntacticAnalyzer::For() {
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::ServiceWord || cur_lexeme.GetContent() != "for") {
+        //throw cur_lexeme;
+    }
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "(") {
+        //throw cur_lexeme;
+    }
+    Expression();
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ";") {
+        //throw cur_lexeme;
+    }
+    Expression();
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ";") {
+        //throw cur_lexeme;
+    }
+    Expression();
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ")") {
+        //throw cur_lexeme;
+    }
+    Block();
+}
 
+void SyntacticAnalyzer::Switch() {
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::ServiceWord || cur_lexeme.GetContent() != "switch") {
+        //throw cur_lexeme;
+    }
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "(") {
+        //throw cur_lexeme;
+    }
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Identifier) {
+        //throw cur_lexeme;
+    }
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ")") {
+        //throw cur_lexeme;
+    }
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "{") {
+        //throw cur_lexeme;
+    }
+    cur_lexeme = lexer.GetLex();
+    Cases();
+    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "}") {
+        //throw cur_lexeme;
+    }
+}
+
+void SyntacticAnalyzer::Cases() {
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::ServiceWord || cur_lexeme.GetContent() != "case") {
+        //throw cur_lexeme;
+    }
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Literal) {
+        //throw cur_lexeme;
+    }
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ":") {
+        //throw cur_lexeme;
+    }
+    Block();
+    Lexeme next = lexer.PeekLex();
+    while (next.GetType() == LexemeType::ServiceWord && next.GetContent() == "case") {
+        cur_lexeme = lexer.GetLex();
+        cur_lexeme = lexer.GetLex();
+        if (cur_lexeme.GetType() != LexemeType::Literal) {
+            //throw cur_lexeme;
+        }
+        cur_lexeme = lexer.GetLex();
+        if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ":") {
+            //throw cur_lexeme;
+        }
+        Block();
+        next = lexer.PeekLex();
+    }
+}
+
+void SyntacticAnalyzer::Command() {
+    Lexeme next = lexer.PeekLex();
+    if (next.GetType() == LexemeType::ServiceWord) {
+        if (next.GetContent() == "if") {
+            If();
+        }
+        else if (next.GetContent() == "while") {
+            While();
+        }
+        else if (next.GetContent() == "for") {
+            For();
+        }
+        else if (next.GetContent() == "break") {
+            Break();
+        }
+        else if (next.GetContent() == "continue") {
+            Continue();
+        }
+        else if (next.GetContent() == "input") {
+            Input();
+        }
+        else if (next.GetContent() == "output") {
+            Output();
+        }
+        else if (next.GetContent() == "return") {
+            Return();
+        }
+        else if (next.GetContent() == "switch") {
+            Switch();
+        }
+    }
+    else if (next.IsType()) {
+        Vars();
+    }
+    else {
+        Expression();
+        cur_lexeme = lexer.GetLex();
+        if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ";") {
+            //throw cur_lexeme;
+        }
+    }
 }
 
 void SyntacticAnalyzer::Block() {
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "{") {
+        //throw cur_lexeme;
+    }
+    Lexeme next = lexer.PeekLex();
+    while (next.GetType() != LexemeType::Punctuation || next.GetContent() != "}") {
+        Command();
+        next = lexer.PeekLex();
+    }
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "}") {
+        //throw cur_lexeme;
+    }
+}
 
+void SyntacticAnalyzer::Main() {
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::ServiceWord || cur_lexeme.GetContent() != "main") {
+        //throw cur_lexeme;
+    }
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "(") {
+        //throw cur_lexeme;
+    }
+    Lexeme next = lexer.PeekLex();
+    if (next.GetType() != LexemeType::Punctuation || next.GetContent() != ")") {
+        Params();
+    }
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ")") {
+        //throw cur_lexeme;
+    }
+    Block();
 }
 
 void SyntacticAnalyzer::Expression() {

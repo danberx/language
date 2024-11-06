@@ -11,6 +11,7 @@ public:
     const std::string& GetContent() const;
     LexemeType GetType() const;
     int GetLine() const;
+    bool IsType();
 private:
     std::string content;
     LexemeType type;

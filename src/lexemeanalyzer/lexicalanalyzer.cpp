@@ -201,7 +201,7 @@ bool LexicalAnalyzer::IsInt(const std::string &s) {
 }
 
 Lexeme LexicalAnalyzer::GetLex() {
-    if (cur_lexeme == lexemes.size()) {
+    if (cur_lexeme >= lexemes.size()) {
         return Lexeme("END", LexemeType::Other, -1);
     }
     return lexemes[cur_lexeme++];

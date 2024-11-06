@@ -13,3 +13,8 @@ LexemeType Lexeme::GetType() const {
 int Lexeme::GetLine() const {
     return line;
 }
+
+bool Lexeme::IsType() {
+    if (type != LexemeType::ServiceWord) return false;
+    return (content == "int" || content == "double" || content == "string" || content == "bool" || content == "char" || content == "array");
+}
