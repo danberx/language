@@ -31,7 +31,8 @@
 <unary-op> ::= "!" | "~" | "-" | "+" | "++" | "--"
 <postfix-exp> ::= <bracket-exp> [ <postfix-op> ]
 <postfix-op> ::= "++" | "--"
-<bracket-exp> ::= "(" <expression> ")" | <identifier> | <literal>
+<bracket-exp> ::= "(" <expression> ")" | <identifier> | <literal> | <function-call>
+<function-call> ::= <identifier> "(" [ <expression> {, <expression> } ] ")"
 
 <input> ::= "input" "(" <identifier> ")" ";"
 <output> ::= "output" "(" <expression> ")" ";"
