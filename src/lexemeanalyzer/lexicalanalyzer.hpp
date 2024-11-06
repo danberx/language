@@ -7,6 +7,7 @@ class LexicalAnalyzer {
 public:
     LexicalAnalyzer(const std::string &path1, const std::string &path2, const std::string &path3);
     Lexeme GetLex();
+    Lexeme PeekLex();
     void print_lexemes();
 private:
     void GetLexemes(const std::string &path);

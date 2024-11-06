@@ -207,6 +207,13 @@ Lexeme LexicalAnalyzer::GetLex() {
     return lexemes[cur_lexeme++];
 }
 
+Lexeme LexicalAnalyzer::PeekLex() {
+    if (cur_lexeme + 1 >= lexemes.size()) {
+        return Lexeme("END", LexemeType::Other, -1);
+    }
+    return lexemes[cur_lexeme + 1];
+}
+
 void LexicalAnalyzer::print_lexemes() {
     Lexeme cur = GetLex();
     while (cur.GetLine() != -1) {
