@@ -1,4 +1,4 @@
-#include "lexicalanalyzer.hpp"
+#include "lexemeanalyzer/lexicalanalyzer.hpp"
 #include <iostream>
 
 const std::string path_words = "../src/txt/words.txt";

@@ -207,11 +207,11 @@ Lexeme LexicalAnalyzer::GetLex() {
     return lexemes[cur_lexeme++];
 }
 
-Lexeme LexicalAnalyzer::PeekLex() {
-    if (cur_lexeme + 1 >= lexemes.size()) {
+Lexeme LexicalAnalyzer::PeekLex(int cur) {
+    if (cur_lexeme + cur >= lexemes.size()) {
         return Lexeme("END", LexemeType::Other, -1);
     }
-    return lexemes[cur_lexeme + 1];
+    return lexemes[cur_lexeme + cur];
 }
 
 void LexicalAnalyzer::print_lexemes() {
