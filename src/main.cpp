@@ -8,4 +8,4 @@ const std::string path_code = "../code.txt";
 
 int main() {
     SyntacticAnalyzer a(path_words, path_operations, path_code);
-cd}
+}
