@@ -26,7 +26,22 @@ public:
     void Switch();
     void Cases();
     void Command();
-
+    void Assignment_exp();
+    void Logical_or_exp();
+    void Logical_ans_exp();
+    void Bitwise_or_exp();
+    void Bitwise_xor_exp();
+    void Bitwise_ans_exp();
+    void Equal_exp();
+    void Compare_exp();
+    void Bitwise_shift_exp();
+    void Addition_exp();
+    void Multy_exp();
+    void Unary_exp();
+    void Postfix_exp();
+    void Bracket_exp();
+    void Index();
+    void Function_call();
 private:
     LexicalAnalyzer lexer;
     Lexeme cur_lexeme;
