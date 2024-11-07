@@ -2,7 +2,7 @@
 #include <iostream>
 
 LexicalAnalyzer::LexicalAnalyzer(const std::string &path1, const std::string &path2, const std::string &path3):
-    bor_service_words(path1), bor_operations(path2), cur_lexeme(0) {
+    bor_service_words(path1), bor_operations(path2), cur_lexeme(-1) {
     GetLexemes(path3);
 }
 
@@ -201,10 +201,10 @@ bool LexicalAnalyzer::IsInt(const std::string &s) {
 }
 
 Lexeme LexicalAnalyzer::GetLex() {
-    if (cur_lexeme >= lexemes.size()) {
+    if (cur_lexeme + 1>= lexemes.size()) {
         return Lexeme("END", LexemeType::Other, -1);
     }
-    return lexemes[cur_lexeme++];
+    return lexemes[++cur_lexeme];
 }
 
 Lexeme LexicalAnalyzer::PeekLex(int cur) {

@@ -3,6 +3,7 @@
 #include "../lexemeanalyzer/lexicalanalyzer.hpp"
 
 class SyntacticAnalyzer {
+public:
     SyntacticAnalyzer(const std::string &path1, const std::string &path2, const std::string &path3);
     void Programm();
     bool Type();
