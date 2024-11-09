@@ -10,7 +10,7 @@
 <params> ::= <var> {"," <var>}
 
 <expression> ::= <assignment-exp> { "," <assignment-exp> }
-<assignment-exp> ::= <logical-or-exp>  | <identifier> "=" <logicla-or-exp>
+<assignment-exp> ::= <logical-or-exp>  | <identifier> <assignment-op> <logicla-or-exp>
 <assignment-op> ::= "=" | "+=" | "-=" | "*=" | "/=" | "|=" | "&=" | "^="
 <logical-or-exp> ::= <logical-and-exp> { "||" <logical-and-exp> }
 <logical-and-exp> ::= <bitwise-or-exp> { "&&" <bitwise-or-exp> }
