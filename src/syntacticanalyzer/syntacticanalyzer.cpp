@@ -394,7 +394,7 @@ void SyntacticAnalyzer::Main() {
     }
     Lexeme next = lexer.PeekLex();
     if (next.GetType() != LexemeType::Bracket || next.GetContent() != ")") {
-        //...
+        Params();
     }
     cur_lexeme = lexer.GetLex();
     if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ")") {
@@ -539,5 +539,82 @@ void SyntacticAnalyzer::Postfix_exp() {
 }
 
 void SyntacticAnalyzer::Bracket_exp() {
-    
+   Lexeme next = lexer.PeekLex();
+   if (next.GetType() == LexemeType::Literal) {
+       cur_lexeme = lexer.GetLex();
+       return;
+   }
+   if (next.GetType() == LexemeType::Bracket && next.GetContent() == "(") {
+       cur_lexeme = lexer.GetLex();
+       Expression();
+       cur_lexeme = lexer.GetLex();
+       if (cur_lexeme.GetType() != LexemeType::Bracket || cur_lexeme.GetContent() != ")") {
+           // throw cur_lexeme;
+       }
+       return;
+   }
+   Lexeme next2 = lexer.PeekLex(2);
+   if (next2.GetType() == LexemeType::Bracket && next2.GetContent() == "(") {
+       Function_call();
+   } else if (next2.GetType() == LexemeType::Bracket && next2.GetContent() == "[") {
+       Index();
+   } else {
+       cur_lexeme = lexer.GetLex();
+       if (cur_lexeme.GetType() != LexemeType::Identifier) {
+           // throw cur_lexeme;
+       }
+   }
+}
+
+void SyntacticAnalyzer::Index() {
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Identifier) {
+        // throw cur_lexeme;
+    }
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Bracket || cur_lexeme.GetContent() != "[") {
+        // throw cur_lexeme;
+    }
+    Expression();
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Bracket || cur_lexeme.GetContent() != "]") {
+        // throw cur_lexeme;
+    }
+    Lexeme next = lexer.PeekLex();
+    while (next.GetType() == LexemeType::Bracket && next.GetContent() == "[") {
+        cur_lexeme = lexer.GetLex();
+        Expression();
+        cur_lexeme = lexer.GetLex();
+        if (cur_lexeme.GetType() != LexemeType::Bracket || cur_lexeme.GetContent() != "]") {
+            // throw cur_lexeme;
+        }
+        next = lexer.PeekLex();
+    }
+}
+
+void SyntacticAnalyzer::Function_call() {
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Identifier) {
+        // throw cur_lexeme;
+    }
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Bracket || cur_lexeme.GetContent() != "(") {
+        // throw cur_lexeme;
+    }
+    Lexeme next = lexer.PeekLex();
+    if (next.GetType() == LexemeType::Bracket && next.GetContent() == ")") {
+        cur_lexeme = lexer.GetLex();
+        return;
+    }
+    Expression();
+    next = lexer.PeekLex();
+    while (next.GetType() == LexemeType::Comma) {
+        cur_lexeme = lexer.GetLex();
+        Expression();
+        next = lexer.PeekLex();
+    }
+    cur_lexeme = lexer.GetLex();
+    if (cur_lexeme.GetType() != LexemeType::Bracket || cur_lexeme.GetContent() != ")") {
+       //throw cur_lexeme;
+    }
 }
