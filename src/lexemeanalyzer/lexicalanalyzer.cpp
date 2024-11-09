@@ -168,7 +168,7 @@ bool LexicalAnalyzer::IsPoint(const std::string &s) {
 }
 
 bool LexicalAnalyzer::IsBracket(const std::string &s) {
-    if (s == "(" || s == ")")
+    if (s == "(" || s == ")" || s == "[" || s == "]")
         return 1;
     return 0;
 }
