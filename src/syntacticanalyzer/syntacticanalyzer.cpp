@@ -404,6 +404,140 @@ void SyntacticAnalyzer::Main() {
 }
 
 void SyntacticAnalyzer::Expression() {
-
+    Assignment_exp();
+    Lexeme next = lexer.PeekLex();
+    while (next.GetType() == LexemeType::Comma) {
+        cur_lexeme = lexer.GetLex();
+        Assignment_exp();
+        next = lexer.PeekLex();
+    }
 }
 
+void SyntacticAnalyzer::Assignment_exp() {
+    Lexeme next = lexer.PeekLex();
+    Lexeme sign = lexer.PeekLex(2);
+    if (next.GetType() == LexemeType::Identifier && sign.AssignmentOp()) {
+        cur_lexeme = lexer.GetLex();
+        cur_lexeme = lexer.GetLex();
+    }
+    Logical_or_exp();
+}
+
+void SyntacticAnalyzer::Logical_or_exp() {
+    Logical_and_exp();
+    Lexeme next = lexer.PeekLex();
+    while (next.GetType() == LexemeType::Operation && next.GetContent() == "||") {
+        cur_lexeme = lexer.GetLex();
+        Logical_and_exp();
+        next = lexer.PeekLex();
+    }
+}
+
+void SyntacticAnalyzer::Logical_and_exp() {
+    Bitwise_or_exp();
+    Lexeme next = lexer.PeekLex();
+    while (next.GetType() == LexemeType::Operation && next.GetContent() == "&&") {
+        cur_lexeme = lexer.GetLex();
+        Bitwise_or_exp();
+        next = lexer.PeekLex();
+    }
+}
+
+void SyntacticAnalyzer::Bitwise_or_exp() {
+    Bitwise_xor_exp();
+    Lexeme next = lexer.PeekLex();
+    while (next.GetType() == LexemeType::Operation && next.GetContent() == "|") {
+        cur_lexeme = lexer.GetLex();
+        Bitwise_xor_exp();
+        next = lexer.PeekLex();
+    }
+}
+
+void SyntacticAnalyzer::Bitwise_xor_exp() {
+    Bitwise_and_exp();
+    Lexeme next = lexer.PeekLex();
+    while (next.GetType() == LexemeType::Operation && next.GetContent() == "^") {
+        cur_lexeme = lexer.GetLex();
+        Bitwise_and_exp();
+        next = lexer.PeekLex();
+    }
+}
+
+void SyntacticAnalyzer::Bitwise_and_exp() {
+    Equal_exp();
+    Lexeme next = lexer.PeekLex();
+    while (next.GetType() == LexemeType::Operation && next.GetContent() == "&") {
+        cur_lexeme = lexer.GetLex();
+        Equal_exp();
+        next = lexer.PeekLex();
+    }
+}
+
+void SyntacticAnalyzer::Equal_exp() {
+    Compare_exp();
+    Lexeme next = lexer.PeekLex();
+    if (next.EqualOp()) {
+        cur_lexeme = lexer.GetLex();
+        Compare_exp();
+    }
+}
+
+void SyntacticAnalyzer::Compare_exp() {
+    Bitwise_shift_exp();
+    Lexeme next = lexer.PeekLex();
+    if (next.CompareOp()) {
+        cur_lexeme = lexer.GetLex();
+        Bitwise_shift_exp();
+    }
+}
+
+void SyntacticAnalyzer::Bitwise_shift_exp() {
+    Addition_exp();
+    Lexeme next = lexer.PeekLex();
+    while (next.BitwiseShiftOp()) {
+        cur_lexeme = lexer.GetLex();
+        Addition_exp();
+        next = lexer.PeekLex();
+    }
+}
+
+void SyntacticAnalyzer::Addition_exp() {
+    Multy_exp();
+    Lexeme next = lexer.PeekLex();
+    while (next.AdditionOp()){
+        cur_lexeme = lexer.GetLex();
+        Multy_exp();
+        next = lexer.PeekLex();
+    }
+}
+
+void SyntacticAnalyzer::Multy_exp() {
+    Unary_exp();
+    Lexeme next = lexer.PeekLex();
+    while (next.MultyOp()) {
+        cur_lexeme = lexer.GetLex();
+        Unary_exp();
+        next = lexer.PeekLex();
+    }
+}
+
+void SyntacticAnalyzer::Unary_exp() {
+    Lexeme next = lexer.GetLex();
+    if (next.UnaryOp()) {
+        cur_lexeme = lexer.GetLex();
+        Unary_exp();
+    }
+    Postfix_exp();
+}
+
+void SyntacticAnalyzer::Postfix_exp() {
+    Bracket_exp();
+    Lexeme next = lexer.PeekLex();
+    if (next.PostfixOp()) {
+        cur_lexeme = lexer.GetLex();
+    }
+}
+
+void SyntacticAnalyzer::Bracket_exp() {
+    
+}

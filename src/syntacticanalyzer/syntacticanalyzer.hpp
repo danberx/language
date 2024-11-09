@@ -28,10 +28,10 @@ public:
     void Command();
     void Assignment_exp();
     void Logical_or_exp();
-    void Logical_ans_exp();
+    void Logical_and_exp();
     void Bitwise_or_exp();
     void Bitwise_xor_exp();
-    void Bitwise_ans_exp();
+    void Bitwise_and_exp();
     void Equal_exp();
     void Compare_exp();
     void Bitwise_shift_exp();
