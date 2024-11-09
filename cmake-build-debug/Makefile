@@ -48,19 +48,19 @@ cmake_force:
 SHELL = /bin/sh
 
 # The CMake executable.
-CMAKE_COMMAND = /private/var/folders/vk/frq8dnmx1czctyk5zh2289x00000gn/T/AppTranslocation/76618988-1960-4D1F-A754-04EFF3D3C8B3/d/CLion.app/Contents/bin/cmake/mac/bin/cmake
+CMAKE_COMMAND = /private/var/folders/vk/frq8dnmx1czctyk5zh2289x00000gn/T/AppTranslocation/D33FB74C-35DF-4111-9000-54BC65445714/d/CLion.app/Contents/bin/cmake/mac/bin/cmake
 
 # The command to remove a file.
-RM = /private/var/folders/vk/frq8dnmx1czctyk5zh2289x00000gn/T/AppTranslocation/76618988-1960-4D1F-A754-04EFF3D3C8B3/d/CLion.app/Contents/bin/cmake/mac/bin/cmake -E rm -f
+RM = /private/var/folders/vk/frq8dnmx1czctyk5zh2289x00000gn/T/AppTranslocation/D33FB74C-35DF-4111-9000-54BC65445714/d/CLion.app/Contents/bin/cmake/mac/bin/cmake -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/nikitaserakov/Desktop/FTL__/language
+CMAKE_SOURCE_DIR = "/Users/nikitaserakov/Desktop/FTL__/test language/language"
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/nikitaserakov/Desktop/FTL__/language/cmake-build-debug
+CMAKE_BINARY_DIR = "/Users/nikitaserakov/Desktop/FTL__/test language/language/cmake-build-debug"
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -68,7 +68,7 @@ CMAKE_BINARY_DIR = /Users/nikitaserakov/Desktop/FTL__/language/cmake-build-debug
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/private/var/folders/vk/frq8dnmx1czctyk5zh2289x00000gn/T/AppTranslocation/76618988-1960-4D1F-A754-04EFF3D3C8B3/d/CLion.app/Contents/bin/cmake/mac/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	/private/var/folders/vk/frq8dnmx1czctyk5zh2289x00000gn/T/AppTranslocation/D33FB74C-35DF-4111-9000-54BC65445714/d/CLion.app/Contents/bin/cmake/mac/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -78,7 +78,7 @@ edit_cache/fast: edit_cache
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	/private/var/folders/vk/frq8dnmx1czctyk5zh2289x00000gn/T/AppTranslocation/76618988-1960-4D1F-A754-04EFF3D3C8B3/d/CLion.app/Contents/bin/cmake/mac/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	/private/var/folders/vk/frq8dnmx1czctyk5zh2289x00000gn/T/AppTranslocation/D33FB74C-35DF-4111-9000-54BC65445714/d/CLion.app/Contents/bin/cmake/mac/bin/cmake --regenerate-during-build -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : rebuild_cache
 
 # Special rule for the target rebuild_cache
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/nikitaserakov/Desktop/FTL__/language/cmake-build-debug/CMakeFiles /Users/nikitaserakov/Desktop/FTL__/language/cmake-build-debug//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/nikitaserakov/Desktop/FTL__/test language/language/cmake-build-debug/CMakeFiles" "/Users/nikitaserakov/Desktop/FTL__/test language/language/cmake-build-debug//CMakeFiles/progress.marks"
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/nikitaserakov/Desktop/FTL__/language/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start "/Users/nikitaserakov/Desktop/FTL__/test language/language/cmake-build-debug/CMakeFiles" 0
 .PHONY : all
 
 # The main clean target
@@ -225,6 +225,30 @@ src/main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/syntacticanalyzer/syntacticanalyzer.o: src/syntacticanalyzer/syntacticanalyzer.cpp.o
+.PHONY : src/syntacticanalyzer/syntacticanalyzer.o
+
+# target to build an object file
+src/syntacticanalyzer/syntacticanalyzer.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/src/syntacticanalyzer/syntacticanalyzer.cpp.o
+.PHONY : src/syntacticanalyzer/syntacticanalyzer.cpp.o
+
+src/syntacticanalyzer/syntacticanalyzer.i: src/syntacticanalyzer/syntacticanalyzer.cpp.i
+.PHONY : src/syntacticanalyzer/syntacticanalyzer.i
+
+# target to preprocess a source file
+src/syntacticanalyzer/syntacticanalyzer.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/src/syntacticanalyzer/syntacticanalyzer.cpp.i
+.PHONY : src/syntacticanalyzer/syntacticanalyzer.cpp.i
+
+src/syntacticanalyzer/syntacticanalyzer.s: src/syntacticanalyzer/syntacticanalyzer.cpp.s
+.PHONY : src/syntacticanalyzer/syntacticanalyzer.s
+
+# target to generate assembly for a file
+src/syntacticanalyzer/syntacticanalyzer.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/language.dir/build.make CMakeFiles/language.dir/src/syntacticanalyzer/syntacticanalyzer.cpp.s
+.PHONY : src/syntacticanalyzer/syntacticanalyzer.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -246,6 +270,9 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/syntacticanalyzer/syntacticanalyzer.o"
+	@echo "... src/syntacticanalyzer/syntacticanalyzer.i"
+	@echo "... src/syntacticanalyzer/syntacticanalyzer.s"
 .PHONY : help
 
 

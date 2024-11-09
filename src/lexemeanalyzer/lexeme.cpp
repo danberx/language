@@ -15,46 +15,70 @@ int Lexeme::GetLine() const {
 }
 
 bool Lexeme::IsType() {
-    if (type != LexemeType::ServiceWord) return false;
+    if (!IsServiceWord()) return false;
     return (content == "int" || content == "double" || content == "string" || content == "bool" || content == "char" || content == "array");
 }
 
+bool Lexeme::IsFunctionType() {
+    return IsType() || IsServiceWord() && content == "void";
+}
+
 bool Lexeme::AssignmentOp() {
-    if (type != LexemeType::Operation) return false;
+    if (!IsOperation()) return false;
     return (content == "=" || content == "+=" || content == "-=" || content == "*=" || content == "/=" || content == "%=" || content == "|=" || content == "&=" || content == "^=");
 }
 
 bool Lexeme::EqualOp() {
-    if (type != LexemeType::Operation) return false;
+    if (!IsOperation()) return false;
     return (content == "==" || content == "!=");
 }
 
 bool Lexeme::CompareOp() {
-    if (type != LexemeType::Operation) return false;
+    if (!IsOperation()) return false;
     return (content == ">" || content == "<" || content == ">=" || content == "<=");
 }
 
 bool Lexeme::BitwiseShiftOp() {
-    if (type != LexemeType::Operation) return false;
+    if (!IsOperation()) return false;
     return (content == "<<" || content == ">>");
 }
 
 bool Lexeme::AdditionOp() {
-    if (type != LexemeType::Operation) return false;
+    if (!IsOperation()) return false;
     return (content == "+" || content == "-");
 }
 
 bool Lexeme::MultyOp() {
-    if (type != LexemeType::Operation) return false;
+    if (!IsOperation()) return false;
     return (content == "*" || content == "/" || content == "%");
 }
 
 bool Lexeme::UnaryOp() {
-    if (type != LexemeType::Operation) return false;
+    if (!IsOperation()) return false;
     return (content == "!" || content == "~" || content == "-" || content == "+" || content == "-" || content == "++" || content == "--");
 }
 
 bool Lexeme::PostfixOp() {
-    if (type != LexemeType::Operation) return false;
+    if (!IsOperation()) return false;
     return (content == "++" || content == "--");
+}
+
+bool Lexeme::IsServiceWord() {
+    return type == LexemeType::ServiceWord;
+}
+
+bool Lexeme::IsIdentifier() {
+    return type == LexemeType::Identifier;
+}
+
+bool Lexeme::IsOperation() {
+    return type == LexemeType::Operation;
+}
+
+bool Lexeme::IsComma() {
+    return type == LexemeType::Comma;
+}
+
+bool Lexeme::IsPunctuation() {
+    return type == LexemeType::Punctuation;
 }

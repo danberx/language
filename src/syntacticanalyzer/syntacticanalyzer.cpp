@@ -8,19 +8,22 @@ SyntacticAnalyzer::SyntacticAnalyzer(const std::string &path1, const std::string
 
 void SyntacticAnalyzer::Programm() {
     Lexeme next = lexer.PeekLex();
-    if (next.GetType() == LexemeType::ServiceWord && next.GetContent() == "function") {
+    if (next.IsServiceWord() && next.GetContent() == "function") {
         Function();
         Programm();
-        return;
     }
-    if (next.GetType() == LexemeType::ServiceWord && next.GetContent() == "main") {
+    else if (next.IsServiceWord() && next.GetContent() == "main") {
         Main();
     }
-    else {
+    else if (next.IsType()) {
         Vars();
         Programm();
     }
-    // throw cur_lexeme;
+    NextLex();
+    if (cur_lexeme.GetContent() != "END") {
+        //throw cur_lexeme;
+        throw std::exception();
+    }
 }
 
 bool SyntacticAnalyzer::Type() {
@@ -30,69 +33,82 @@ bool SyntacticAnalyzer::Type() {
 }
 
 void SyntacticAnalyzer::Var() {
-    cur_lexeme = lexer.GetLex();
-    if (!Type()) {
+    NextLex();
+
+    if (!cur_lexeme.IsType()) {
         // throw cur_lexeme;
+        throw std::exception();
     }
-    cur_lexeme = lexer.GetLex();
+    NextLex();
+
     if (cur_lexeme.GetType() != LexemeType::Identifier) {
         //throw cur_lexeme;
+        throw std::exception();
     }
+
     Lexeme next = lexer.PeekLex();
-    if (next.GetType() == LexemeType::Operation && next.GetContent() == "=") {
-        cur_lexeme = lexer.GetLex();
-        // Assignment_expression();
-        return;
+
+    if (next.IsOperation() && next.GetContent() == "=") {
+        NextLex();
+
+        Assignment_exp();
+
     }
+
 }
 
 void SyntacticAnalyzer::Vars() {
     Var();
     Lexeme next = lexer.PeekLex();
-    while (next.GetType() == LexemeType::Comma) {
-        cur_lexeme = lexer.GetLex();
-        cur_lexeme = lexer.GetLex();
-        if (cur_lexeme.GetType() != LexemeType::Identifier) {
+    while (next.IsComma()) {
+        NextLex(2);
+        if (!cur_lexeme.IsIdentifier()) {
             //throw cur_lexeme;
+            throw std::exception();
         }
         Lexeme nextin = lexer.PeekLex();
-        if (nextin.GetType() == LexemeType::Operation && nextin.GetContent() == "=") {
-            cur_lexeme = lexer.GetLex();
-            // Assignment_expression();
-            nextin = lexer.PeekLex();
+        if (nextin.IsOperation() && nextin.GetContent() == "=") {
+            NextLex();
+            Assignment_exp();
         }
-        next = nextin;
+        next = lexer.PeekLex();
     }
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ";") {
+    NextLex();
+    if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
         // throw cur_lexeme;
+        throw std::exception();
     }
 }
 
 void SyntacticAnalyzer::Function() {
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::ServiceWord || cur_lexeme.GetContent() != "function") {
+    NextLex();
+    if (!cur_lexeme.IsServiceWord() || cur_lexeme.GetContent() != "function") {
         //throw cur_lexeme;
+        throw std::exception();
     }
-    cur_lexeme = lexer.GetLex();
-    if (!Function_type()) {
+    NextLex();
+    if (!cur_lexeme.IsFunctionType()) {
         //throw cur_lexeme;
+        throw std::exception();
     }
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Identifier) {
+    NextLex();
+    if (!cur_lexeme.IsIdentifier()) {
         // throw cur_lexeme;
+        throw std::exception();
     }
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "(") {
+    NextLex();
+    if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != "(") {
         //throw cur_lexeme;
+        throw std::exception();
     }
     Lexeme next = lexer.PeekLex();
-    if (next.GetType() != LexemeType::Punctuation || next.GetContent() != ")") {
+    if (!next.IsPunctuation() || next.GetContent() != ")") {
         Params();
     }
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ")") {
+    NextLex();
+    if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ")") {
         //throw cur_lexeme;
+        throw std::exception();
     }
     Block();
 }
@@ -102,154 +118,182 @@ bool SyntacticAnalyzer::Function_type() {
 }
 
 void SyntacticAnalyzer::Return() {
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::ServiceWord || cur_lexeme.GetContent() != "return") {
+    NextLex();
+    if (!cur_lexeme.IsServiceWord() || cur_lexeme.GetContent() != "return") {
         // throw cur_lexeme;
+        throw std::exception();
     }
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ";") {
+
+    Expression();
+
+    NextLex();
+    if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
         // throw cur_lexeme;
+        throw std::exception();
     }
 }
 
 void SyntacticAnalyzer::Params() {
     Var();
     Lexeme next = lexer.PeekLex();
-    while (next.GetType() == LexemeType::Comma) {
-        cur_lexeme = lexer.GetLex();
+    while (next.IsComma()) {
+        NextLex();
         Var();
         next = lexer.PeekLex();
     }
 }
 
 void SyntacticAnalyzer::Input() {
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::ServiceWord || cur_lexeme.GetContent() != "input") {
+    NextLex();
+    if (!cur_lexeme.IsServiceWord() || cur_lexeme.GetContent() != "input") {
         // throw cur_lexeme;
+        throw std::exception();
     }
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "(") {
+    NextLex();
+    if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != "(") {
         // throw cur_lexeme;
+        throw std::exception();
     }
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Identifier) {
+    NextLex();
+    if (!cur_lexeme.IsIdentifier()) {
         // throw cur_lexeme;
+        throw std::exception();
     }
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ")") {
+    NextLex();
+    if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ")") {
         // throw cur_lexeme;
+        throw std::exception();
     }
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ";") {
+    NextLex();
+    if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
         // throw cur_lexeme;
+        throw std::exception();
     }
 }
 
 void SyntacticAnalyzer::Output() {
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::ServiceWord || cur_lexeme.GetContent() != "output") {
+    NextLex();
+    if (!cur_lexeme.IsIdentifier() || cur_lexeme.GetContent() != "output") {
         // throw cur_lexeme;
+        throw std::exception();
     }
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "(") {
+    NextLex();
+    if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != "(") {
         // throw cur_lexeme;
+        throw std::exception();
     }
     Expression();
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ")") {
+    NextLex();
+    if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ")") {
         // throw cur_lexeme;
+        throw std::exception();
     }
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ";") {
+    NextLex();
+    if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
         // throw cur_lexeme;
+        throw std::exception();
     }
 }
 
 void SyntacticAnalyzer::Break() {
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::ServiceWord || cur_lexeme.GetContent() != "break") {
+    NextLex();
+    if (!cur_lexeme.IsServiceWord() || cur_lexeme.GetContent() != "break") {
         // throw cur_lexeme;
+        throw std::exception();
     }
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ";") {
+    NextLex();
+    if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
         // throw cur_lexeme;
+        throw std::exception();
     }
 }
 
 void SyntacticAnalyzer::Continue() {
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::ServiceWord || cur_lexeme.GetContent() != "continue") {
+    NextLex();
+    if (!cur_lexeme.IsServiceWord() || cur_lexeme.GetContent() != "continue") {
         // throw cur_lexeme;
+        throw std::exception();
     }
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ";") {
+    NextLex();
+    if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
         // throw cur_lexeme;
+        throw std::exception();
     }
 }
 
 void SyntacticAnalyzer::If() {
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::ServiceWord || cur_lexeme.GetContent() !=  "if") {
+    NextLex();
+    if (!cur_lexeme.IsServiceWord() || cur_lexeme.GetContent() !=  "if") {
         //throw cur_lexeme;
+        throw std::exception();
     }
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "(") {
+    NextLex();
+    if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != "(") {
         // throw cur_lexeme;
+        throw std::exception();
     }
     Expression();
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ")") {
+    NextLex();
+    if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ")") {
         //throw cur_lexeme;
+        throw std::exception();
     }
     Block();
     Lexeme next = lexer.PeekLex();
-    while (next.GetType() == LexemeType::ServiceWord && next.GetContent() == "elseif") {
-        cur_lexeme = lexer.GetLex();
-        cur_lexeme = lexer.GetLex();
-        if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "(") {
+    while (next.IsServiceWord() && next.GetContent() == "elseif") {
+        NextLex(2);
+        if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != "(") {
             //throw cur_lexeme;
+            throw std::exception();
         }
         Expression();
-        cur_lexeme = lexer.GetLex();
-        if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ")") {
+        NextLex();
+        if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ")") {
             //throw cur_lexeme;
+            throw std::exception();
         }
         Block();
         next = lexer.PeekLex();
     }
-    if (next.GetType() == LexemeType::ServiceWord && next.GetContent() == "else") {
-        cur_lexeme = lexer.GetLex();
+    if (next.IsServiceWord() && next.GetContent() == "else") {
+        NextLex();
         Block();
     }
 }
 
 void SyntacticAnalyzer::While() {
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::ServiceWord || cur_lexeme.GetContent() != "while") {
+    NextLex();
+    if (!cur_lexeme.IsServiceWord() || cur_lexeme.GetContent() != "while") {
         //throw cur_lexeme;
+        throw std::exception();
     }
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "(") {
+    NextLex();
+    if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != "(") {
         //throw cur_lexeme;
+        throw std::exception();
     }
     Expression();
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ")") {
+    NextLex();
+    if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ")") {
         //throw cur_lexeme;
+        throw std::exception();
     }
+    Block();
 }
 
 void SyntacticAnalyzer::For() {
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::ServiceWord || cur_lexeme.GetContent() != "for") {
+    NextLex();
+    if (!cur_lexeme.IsServiceWord() || cur_lexeme.GetContent() != "for") {
         //throw cur_lexeme;
+        throw std::exception();
     }
-    cur_lexeme = lexer.GetLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "(") {
+    NextLex();
+    if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != "(") {
         //throw cur_lexeme;
+        throw std::exception();
     }
     Expression();
-    cur_lexeme = lexer.GetLex();
+    NextLex();
     if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ";") {
         //throw cur_lexeme;
     }
@@ -617,4 +661,9 @@ void SyntacticAnalyzer::Function_call() {
     if (cur_lexeme.GetType() != LexemeType::Bracket || cur_lexeme.GetContent() != ")") {
        //throw cur_lexeme;
     }
+}
+
+void SyntacticAnalyzer::NextLex(int next_cnt) {
+    while (next_cnt--)
+        cur_lexeme = lexer.GetLex();
 }
