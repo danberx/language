@@ -1,1 +1,8 @@
-int a = 5;
+int a, b;
+function int func(int b, string c) {
+
+}
+
+main () {
+
+}
