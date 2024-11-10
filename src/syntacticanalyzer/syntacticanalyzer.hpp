@@ -43,6 +43,7 @@ public:
     void Index();
     void Function_call();
 private:
+    void NextLex(int next_cnt = 1);
     LexicalAnalyzer lexer;
     Lexeme cur_lexeme;
 };

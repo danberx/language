@@ -12,6 +12,7 @@ public:
     LexemeType GetType() const;
     int GetLine() const;
     bool IsType();
+    bool IsFunctionType();
     bool AssignmentOp();
     bool EqualOp();
     bool CompareOp();
@@ -20,6 +21,13 @@ public:
     bool MultyOp();
     bool UnaryOp();
     bool PostfixOp();
+    bool IsServiceWord();
+    bool IsIdentifier();
+    bool IsOperation();
+    bool IsComma();
+    bool IsPunctuation();
+    bool IsBracket();
+    bool IsLiteral();
 private:
     std::string content;
     LexemeType type;
