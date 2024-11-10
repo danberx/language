@@ -26,6 +26,8 @@ public:
     bool IsOperation();
     bool IsComma();
     bool IsPunctuation();
+    bool IsBracket();
+    bool IsLiteral();
 private:
     std::string content;
     LexemeType type;

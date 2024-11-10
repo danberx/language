@@ -82,3 +82,11 @@ bool Lexeme::IsComma() {
 bool Lexeme::IsPunctuation() {
     return type == LexemeType::Punctuation;
 }
+
+bool Lexeme::IsBracket() {
+    return type == LexemeType::Bracket;
+}
+
+bool Lexeme::IsLiteral() {
+    return type == LexemeType::Literal;
+}

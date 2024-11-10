@@ -10,14 +10,14 @@
 <params> ::= <var> {"," <var>}
 
 <expression> ::= <assignment-exp> { "," <assignment-exp> }
-<assignment-exp> ::= <logical-or-exp>  | <identifier> <assignment-op> <logicla-or-exp>
+<assignment-exp> ::= <logical-or-exp> { <assignment-op> <logicla-or-exp> }
 <assignment-op> ::= "=" | "+=" | "-=" | "*=" | "/=" | "|=" | "&=" | "^="
 <logical-or-exp> ::= <logical-and-exp> { "||" <logical-and-exp> }
 <logical-and-exp> ::= <bitwise-or-exp> { "&&" <bitwise-or-exp> }
 <bitwise-or-exp> ::= <bitwise-xor-exp> { "|" <bitwise-xor-exp> }
 <bitwise-xor-exp> ::= <bitwise-and-exp> { "^" <bitwise-and-exp> }
 <bitwise-and-exp> ::= <equal-exp> { "&" <equal-exp> }
-<equal-exp> ::= <compare-exp> [ <equal-op> <compare-exp> ]
+<equal-exp> ::= <compare-exp> { <equal-op> <compare-exp> }
 <equal-op> ::= "==" | "!="
 <compare-exp> ::= <bitwise-shift-exp> [ <compare-op> <bitwise-shft-exp> ]
 <compare-op> ::= "<" | ">" | ">=" | "<="
