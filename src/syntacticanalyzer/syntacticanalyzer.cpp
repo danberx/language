@@ -393,9 +393,9 @@ void SyntacticAnalyzer::Command() {
         else if (next.GetContent() == "switch") {
             Switch();
         }
-    }
-    else if (next.IsType()) {
-        Vars();
+        else if (next.IsType()) {
+            Vars();
+        }
     }
     else {
         Expression();
