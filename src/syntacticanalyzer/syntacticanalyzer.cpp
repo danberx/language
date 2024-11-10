@@ -588,7 +588,7 @@ void SyntacticAnalyzer::Postfix_exp() {
 
 void SyntacticAnalyzer::Bracket_exp() {
    Lexeme next = lexer.PeekLex();
-   if (next.IsLiteral()) {
+   if (next.IsLiteral() || next.GetType() == LexemeType::StringLiteral) {
        NextLex();
        return;
    }
