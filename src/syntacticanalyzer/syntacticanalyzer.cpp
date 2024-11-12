@@ -661,5 +661,4 @@ const char* SyntacticAnalyzer::ErrorInCode::what() const noexcept {
 }
 
 SyntacticAnalyzer::ErrorInCode::ErrorInCode(const Lexeme &lex, std::string text):
-    text_err(std::format("Error in line {}; On the lexeme {}; {}", lex.GetLine(), lex.GetContent(), text)) {
-}
+    text_err("Error in line " + std::to_string(lex.GetLine()) + "; On the lexeme " + lex.GetContent() + "; " + text) {}
