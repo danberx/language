@@ -1,5 +1,6 @@
 #pragma once
-
+#include <format>
+#include <iostream>
 #include "../lexemeanalyzer/lexicalanalyzer.hpp"
 
 class SyntacticAnalyzer {
@@ -42,6 +43,14 @@ public:
     void Bracket_exp();
     void Index();
     void Function_call();
+
+    class ErrorInCode: public std::exception {
+    public:
+        const char* what() const noexcept;
+        ErrorInCode(const Lexeme &lex, std::string text = "");
+    private:
+        std::string text_err;
+    };
 private:
     void NextLex(int next_cnt = 1);
     LexicalAnalyzer lexer;
