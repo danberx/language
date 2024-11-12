@@ -1,8 +1,7 @@
-int a, b;
-function int func(int b, string c) {
-
+main() {
+if (a == b || c != d++) {
+    string v = "abc";
+    output(v);
 }
-
-main () {
 
 }
