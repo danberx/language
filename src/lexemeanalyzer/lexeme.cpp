@@ -20,7 +20,7 @@ bool Lexeme::IsType() {
 }
 
 bool Lexeme::IsFunctionType() {
-    return IsType() || IsServiceWord() && content == "void";
+    return IsType() || (IsServiceWord() && content == "void");
 }
 
 bool Lexeme::AssignmentOp() {

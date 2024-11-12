@@ -1,8 +1,5 @@
-int a, b;
-function int func(int b, string c) {
-
-}
-
-main () {
-
+function int dfgh(int a, int b) {
+    int a = b;
+    c /= a;
+    return a;
 }
