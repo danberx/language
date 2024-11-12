@@ -1,6 +1,7 @@
 function
 main
 int
+void
 double
 string
 bool
