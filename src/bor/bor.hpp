@@ -10,7 +10,7 @@ public:
     Bor(const std::string& path);
     bool have_word(const std::string& s);
     ~Bor();
-private:
+protected:
     struct node {
         std::map<char, node*> next;
         bool is_terminal;
