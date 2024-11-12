@@ -154,7 +154,7 @@ void SyntacticAnalyzer::Input() {
 
 void SyntacticAnalyzer::Output() {
     NextLex();
-    if (!cur_lexeme.IsIdentifier() || cur_lexeme.GetContent() != "output") {
+    if (!cur_lexeme.IsServiceWord() || cur_lexeme.GetContent() != "output") {
         throw ErrorInCode(cur_lexeme);
     }
     NextLex();

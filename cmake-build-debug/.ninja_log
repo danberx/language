@@ -1,0 +1,10 @@
+# ninja log v5
+1	214	7531413637000827	build.ninja	56d1596dd4eaa405
+1038	1305	7512309586601664	Language.exe	7ea4c225e256d24d
+6578	6973	7529692469948492	language.exe	d93e2a78b05a07f3
+16	3810	7525435303751278	CMakeFiles/language.dir/src/bor/bor.cpp.obj	9ef1a6fac1f54e12
+28	1378	7529562695097597	CMakeFiles/language.dir/src/lexemeanalyzer/lexeme.cpp.obj	f1a17edfb0a117ac
+8	1349	7529686876605165	CMakeFiles/language.dir/src/main.cpp.obj	5d857c4bc7e11215
+40	6865	7529562749928554	CMakeFiles/language.dir/src/lexemeanalyzer/lexicalanalyzer.cpp.obj	53a8a44eda879e2a
+8	6577	7529692466043090	CMakeFiles/language.dir/src/syntacticanalyzer/syntacticanalyzer.cpp.obj	5b6b1ff78a3fa313
+38	1539	7529685973565902	CMakeFiles/language.dir/src/exception/lexemeexception.cpp.obj	c18bbca696550535

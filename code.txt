@@ -1,5 +1,7 @@
-function int dfgh(int a, int b) {
-    int a = b;
-    c /= a;
-    return a;
+main() {
+if (a == b || c != d++) {
+    string v = "abc";
+    output(v);
+}
+
 }
