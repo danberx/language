@@ -121,11 +121,11 @@ void SyntacticAnalyzer::Return() {
 }
 
 void SyntacticAnalyzer::Params() {
-    Var();
+    Function_var();
     Lexeme next = lexer.PeekLex();
     while (next.IsComma()) {
         NextLex();
-        Var();
+        Function_var();
         next = lexer.PeekLex();
     }
 }
