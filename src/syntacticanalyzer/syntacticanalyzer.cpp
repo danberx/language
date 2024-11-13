@@ -4,6 +4,7 @@ SyntacticAnalyzer::SyntacticAnalyzer(const std::string &path1, const std::string
     lexer(path1, path2, path3), cur_lexeme("NONE", LexemeType::Other, -1) {
     try {
         Programm();
+        std::cout << "OK!";
     }
     catch(ErrorInCode& err) {
 
@@ -372,6 +373,10 @@ void SyntacticAnalyzer::Command() {
             Vars();
         }
     }
+    else if (next.IsPunctuation() && next.GetContent() == ";") {
+        NextLex();
+        return;
+    }
     else {
         Expression();
         NextLex();
@@ -588,7 +593,7 @@ void SyntacticAnalyzer::Bracket_exp() {
        }
        return;
    }
-
+   throw ErrorInCode(cur_lexeme);
 }
 
 void SyntacticAnalyzer::Index() {
@@ -648,6 +653,17 @@ void SyntacticAnalyzer::Function_call() {
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
        throw ErrorInCode(cur_lexeme);
 
+    }
+}
+
+void SyntacticAnalyzer::Function_var() {
+    NextLex();
+    if (!cur_lexeme.IsType()) {
+        throw ErrorInCode(cur_lexeme);
+    }
+    NextLex();
+    if (cur_lexeme.GetType() != LexemeType::Identifier) {
+        throw ErrorInCode(cur_lexeme);
     }
 }
 

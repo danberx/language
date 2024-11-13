@@ -1,7 +1,28 @@
-main() {
-if (a == b || c != d++) {
-    string v = "abc";
-    output(v);
+function int func(int a =0, int b, string c) {
+    int res = 0;
+    for (i = 0; i < a; i++) {
+       res += b;
+    }
+    res %= c;
+    return c;
 }
-
+main() {
+    int a;
+    a = a + a;
+    a -= 1;
+    (a == a);
+    a = a + a * (a + 2 * a) + 3 * ++a;
+    func(a, b, c);
+    +a;
+    while (a > 0) {
+        switch (a) {
+            case 2 {
+               a += 1;
+            }
+            case 1 {
+               a *= 2;
+               ;;;;;;;;;;
+            }
+        }
+    }
 }

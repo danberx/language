@@ -42,6 +42,7 @@ public:
     void Bracket_exp();
     void Index();
     void Function_call();
+    void Function_var();
 
     class ErrorInCode: public std::exception {
     public:
