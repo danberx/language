@@ -6,12 +6,10 @@ class SyntacticAnalyzer {
 public:
     SyntacticAnalyzer(const std::string &path1, const std::string &path2, const std::string &path3);
     void Programm();
-    bool Type();
     void Expression();
     void Vars();
     void Var();
     void Function();
-    bool Function_type();
     void Return();
     void Params();
     void Main();

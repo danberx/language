@@ -2,16 +2,26 @@
 #include <vector>
 #include <map>
 #include "lexeme.hpp"
+#include "borsem.hpp"
 
 class SemanticAnalyzer {
 public:
+    SemanticAnalyzer();
+    void PushId(const Lexeme& lex, Type type);
+    Type CheckId(const Lexeme& lex);
+    void CreateScope();
+    void ExitScope();
+    void PushFunc(std::string name, std::vector<std::pair<Type, const Lexeme&>> args);
+    bool CheckFunc(std::string name, std::vector<Type> args);
+
+private:
     class TID {
     public:
-        void PushId(const Lexeme& lex, const std::string& type);
-        const std::string& CheckId(const Lexeme& lex);
+        void PushId(const Lexeme& lex, Type type);
+        Type CheckId(const Lexeme& lex);
         bool Check(const Lexeme& lex);
     private:
-        std::map<std::string, std::string> identifiers;
+        BorSem identifiers;
     };
 
     struct Node {
@@ -21,12 +31,6 @@ public:
         Node(): prev(nullptr) {}
     };
 
-    SemanticAnalyzer();
-    void PushId(const Lexeme& lex, const std::string& type);
-    const std::string& CheckId(const Lexeme& lex);
-    void CreateScope();
-    void ExitScope();
-
-private:
     Node * root, * cur_scope;
+    BorSem functions;
 };

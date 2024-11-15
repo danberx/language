@@ -33,12 +33,6 @@ void SyntacticAnalyzer::Programm() {
     }
 }
 
-bool SyntacticAnalyzer::Type() {
-    if (cur_lexeme.GetType() != LexemeType::ServiceWord) return false;
-    std::string s = cur_lexeme.GetContent();
-    return (s == "int" || s == "double" || s == "string" || s == "bool" || s == "char" || s == "array");
-}
-
 void SyntacticAnalyzer::Var() {
     NextLex();
     if (!cur_lexeme.IsType()) {
@@ -102,10 +96,6 @@ void SyntacticAnalyzer::Function() {
         throw ErrorInCode(cur_lexeme);
     }
     Block();
-}
-
-bool SyntacticAnalyzer::Function_type() {
-    return (Type() || cur_lexeme.GetType() == LexemeType::ServiceWord && cur_lexeme.GetContent() == "void");
 }
 
 void SyntacticAnalyzer::Return() {
@@ -252,7 +242,6 @@ void SyntacticAnalyzer::For() {
     NextLex();
     if (!cur_lexeme.IsServiceWord() || cur_lexeme.GetContent() != "for") {
         throw ErrorInCode(cur_lexeme);
-
     }
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != "(") {
@@ -372,6 +361,9 @@ void SyntacticAnalyzer::Command() {
         else if (next.IsType()) {
             Vars();
         }
+        else {
+            throw ErrorInCode(next);
+        }
     }
     else if (next.IsPunctuation() && next.GetContent() == ";") {
         NextLex();
@@ -391,10 +383,12 @@ void SyntacticAnalyzer::Block() {
     NextLex();
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != "{") {
         throw ErrorInCode(cur_lexeme);
-
     }
     Lexeme next = lexer.PeekLex();
     while (!next.IsPunctuation() || next.GetContent() != "}") {
+        if (next.IsEnd() ) {
+            throw ErrorInCode(cur_lexeme);
+        }
         Command();
         next = lexer.PeekLex();
     }
@@ -593,7 +587,7 @@ void SyntacticAnalyzer::Bracket_exp() {
        }
        return;
    }
-   throw ErrorInCode(cur_lexeme);
+   throw ErrorInCode(next);
 }
 
 void SyntacticAnalyzer::Index() {

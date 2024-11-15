@@ -90,3 +90,7 @@ bool Lexeme::IsBracket() {
 bool Lexeme::IsLiteral() {
     return type == LexemeType::Literal;
 }
+
+bool Lexeme::IsEnd() {
+    return type == LexemeType::Other && line == -1 && content == "END";
+}

@@ -28,6 +28,7 @@ public:
     bool IsPunctuation();
     bool IsBracket();
     bool IsLiteral();
+    bool IsEnd();
 private:
     std::string content;
     LexemeType type;
