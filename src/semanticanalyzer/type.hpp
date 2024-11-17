@@ -5,5 +5,6 @@ enum class Type {
     Int,
     Double,
     String,
-    Function
+    Function,
+    Array
 };

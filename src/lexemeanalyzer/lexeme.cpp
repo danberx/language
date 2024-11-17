@@ -25,7 +25,7 @@ bool Lexeme::IsFunctionType() {
 
 bool Lexeme::AssignmentOp() {
     if (!IsOperation()) return false;
-    return (content == "=" || content == "+=" || content == "-=" || content == "*=" || content == "/=" || content == "%=" || content == "|=" || content == "&=" || content == "^=");
+    return (content == "=" || content == "+=" || content == "-=" || content == "*=" || content == "/=" || content == "%=");
 }
 
 bool Lexeme::EqualOp() {
@@ -93,4 +93,16 @@ bool Lexeme::IsLiteral() {
 
 bool Lexeme::IsEnd() {
     return type == LexemeType::Other && line == -1 && content == "END";
+}
+
+bool Lexeme::IsBitwise() {
+    return content == "|" || content == "&" || content == "^" || content == "<<" || content == ">>";
+}
+
+bool Lexeme::IsLogical() {
+    return content == "||" || content == "&&";
+}
+
+bool Lexeme::IsEqualCompare() {
+    return CompareOp() || EqualOp();
 }

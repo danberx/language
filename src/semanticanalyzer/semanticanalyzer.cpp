@@ -2,14 +2,14 @@
 
 void SemanticAnalyzer::TID::PushId(const Lexeme &lex, Type type) {
     if (identifiers.check(lex.GetContent())) {
-        throw std::exception();
+        throw SemanticError(lex);
     }
     identifiers.insert(lex.GetContent(), type);
 }
 
 Type SemanticAnalyzer::TID::CheckId(const Lexeme &lex) {
     if (!identifiers.check(lex.GetContent())) {
-        throw std::exception();
+        throw SemanticError(lex);
     }
     return identifiers.get(lex.GetContent());
 }
@@ -63,3 +63,83 @@ void SemanticAnalyzer::PushFunc(std::string name, std::vector<std::pair<Type, co
     }
 }
 
+void SemanticAnalyzer::PushSemStack(Lexeme &lex) {
+    if (lex.IsOperation()) {
+        SemStack.push(Element(lex.GetContent(), lex));
+    } else if (lex.IsLiteral()) {
+        Type cur_type;
+        if (lex.GetType() == LexemeType::StringLiteral) {
+            cur_type = Type::String;
+        } else if (lex.GetType() == LexemeType::Literal) {
+            cur_type = Type::Int;
+        } else {
+            throw SemanticError(lex);
+        }
+        SemStack.push(Element(cur_type, false));
+    } else if (lex.IsIdentifier()) {
+        Type cur_type = CheckId(lex);
+        SemStack.push(Element(cur_type, true));
+    } else {
+        throw SemanticError(lex);
+    }
+}
+
+bool SemanticAnalyzer::CheckBin() {
+    Element right_operand = SemStack.top();
+    SemStack.pop();
+    Element operation = SemStack.top();
+    SemStack.pop();
+    Element left_operand = SemStack.top();
+    SemStack.pop();
+    if (operation.lex.AssignmentOp()) {
+        if (!left_operand.is_lvalue) {
+            throw SemanticError(operation.lex, "left operand of assignment expression must be lvalue.");
+        }
+        if (operation.content == "%=") {
+            if (left_operand.type == Type::Double || right_operand.type == Type::Double) {
+                throw SemanticError(operation.lex, "Types are not matching.");
+            }
+        }
+        if (left_operand.type == Type::Int || left_operand.type == Type::Bool || left_operand.type == Type::Double) {
+            if (right_operand.type != Type::Int || right_operand.type != Type::Bool ||
+                right_operand.type != Type::Double) {
+                throw SemanticError(operation.lex, "Types are not matching.");
+            } else {
+                SemStack.push(Element(left_operand.type, 1));
+            }
+        } else if (left_operand.type == Type::String) {
+            if (right_operand.type != Type::String || !(operation.content == "=" || operation.content == "+=")) {
+                throw SemanticError(operation.lex, "Types are not matching.");
+            } else {
+                SemStack.push(Element(right_operand.type, 1));
+            }
+        } else if (left_operand.type == Type::Array) {
+            throw SemanticError(operation.lex, "Arrays do not have an assignment operator.");
+        }
+    } else if (operation.lex.IsBitwise()) {
+        if (left_operand.type != Type::Int || left_operand.type != Type::Bool || right_operand.type != Type::Int || right_operand.type != Type::Bool) {
+            throw SemanticError(operation.lex, "Types are not matching.");
+        } else {
+            SemStack.push(Element(Type::Int, 0));
+        }
+    } else if (operation.lex.IsLogical()) {
+        if (left_operand.type != Type::Int || left_operand.type != Type::Bool || left_operand.type != Type::Double || right_operand.type != Type::Int || right_operand.type != Type::Bool || right_operand.type != Type::Double) {
+            throw SemanticError(operation.lex, "Types are not matching.");
+        } else {
+            SemStack.push((Element(Type::Bool, 0)));
+        }
+    } else if (operation.lex.IsEqualCompare()) {
+        if (left_operand.type == Type::String && right_operand.type != Type::String || left_operand.type != Type::String && right_operand.type == Type::String) {
+            throw SemanticError(operation.lex, "Types are not matching.");
+        } else if (left_operand.type == Type::String && right_operand.type == Type::String) {
+            SemStack.push((Element(Type::Bool, 0)));
+        } else if (left_operand.type != Type::Int || left_operand.type != Type::Bool || left_operand.type != Type::Double || right_operand.type != Type::Int || right_operand.type != Type::Bool || right_operand.type != Type::Double) {
+            throw SemanticError(operation.lex, "Types are not matching.");
+        } else {
+            SemStack.push((Element(Type::Bool, 0)));
+        }
+    }
+}
+
+SemanticAnalyzer::SemanticError::SemanticError(const Lexeme &lex, std::string text):
+    text_err("Error in line " + std::to_string(lex.GetLine()) + "; On the lexeme " + lex.GetContent() + "; " + text) {}

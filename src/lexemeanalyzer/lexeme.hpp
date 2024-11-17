@@ -29,6 +29,9 @@ public:
     bool IsBracket();
     bool IsLiteral();
     bool IsEnd();
+    bool IsBitwise();
+    bool IsLogical();
+    bool IsEqualCompare();
 private:
     std::string content;
     LexemeType type;
