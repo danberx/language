@@ -15,7 +15,7 @@ void BorSem::insert(const std::string &str, Type t) {
     cur->type = t;
 }
 
-Type BorSem::get(const std::string &str) {
+Type BorSem::get(const std::string &str) const {
     node * cur = root;
     for (auto ch : str) {
         if (!cur->next.count(ch)) {
@@ -29,7 +29,7 @@ Type BorSem::get(const std::string &str) {
     return cur->type;
 }
 
-bool BorSem::check(const std::string &str) {
+bool BorSem::check(const std::string &str) const {
     node * cur = root;
     for (auto ch : str) {
         if (!cur->next.count(ch)) {

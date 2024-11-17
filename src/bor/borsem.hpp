@@ -5,8 +5,8 @@
 class BorSem {
 public:
     void insert(const std::string &str, Type t);
-    Type get(const std::string &str);
-    bool check(const std::string &str);
+    Type get(const std::string &str) const;
+    bool check(const std::string &str) const;
     BorSem();
 private:
     struct node {
