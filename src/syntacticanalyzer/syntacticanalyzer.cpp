@@ -1,5 +1,37 @@
 #include "syntacticanalyzer.hpp"
 
+Type GetTypeFromLexeme(const Lexeme& lex) {
+    if (lex.GetType() == LexemeType::ServiceWord){
+        if (lex.GetContent() == "int") {
+            return Type::Int;
+        }
+        if (lex.GetContent() == "void") {
+            return Type::Void;
+        }
+        if (lex.GetContent() == "double") {
+            return Type::Double;
+        }
+        if (lex.GetContent() == "string") {
+            return Type::String;
+        }
+        if (lex.GetContent() == "array") {
+            return Type::Array;
+        }
+        if (lex.GetContent() == "bool") {
+            return Type::Bool;
+        } else {
+            throw SemanticAnalyzer::SemanticError(lex);
+        }
+    } else {
+        if (lex.GetType() == LexemeType::Literal) return Type::Int;
+        else if(lex.GetType() == LexemeType::StringLiteral) return Type::String;
+        else if (lex.GetType() == LexemeType::DoubleLiteral) return Type::Double;
+        else {
+            throw SemanticAnalyzer::SemanticError(lex);
+        }
+    }
+}
+
 SyntacticAnalyzer::SyntacticAnalyzer(const std::string &path1, const std::string &path2, const std::string &path3):
     lexer(path1, path2, path3), cur_lexeme("NONE", LexemeType::Other, -1) {
     try {
@@ -7,12 +39,17 @@ SyntacticAnalyzer::SyntacticAnalyzer(const std::string &path1, const std::string
         std::cout << "OK!";
     }
     catch(ErrorInCode& err) {
-
+        std::cout << "SYNTAX ERROR\n";
         std::cout << err.what();
     }
-
+    catch(SemanticAnalyzer::SemanticError& err) {
+        std::cout << "SEMANTIC ERROR\n";
+        std::cout << err.what();
+    }
+    catch(std::string& err) {
+        std::cout << err;
+    }
 }
-
 
 void SyntacticAnalyzer::Programm() {
     Lexeme next = lexer.PeekLex();
@@ -33,34 +70,58 @@ void SyntacticAnalyzer::Programm() {
     }
 }
 
-void SyntacticAnalyzer::Var() {
+Type SyntacticAnalyzer::Var() {
     NextLex();
     if (!cur_lexeme.IsType()) {
         throw ErrorInCode(cur_lexeme);
     }
+    Type cur_type = GetTypeFromLexeme(cur_lexeme);
     NextLex();
     if (cur_lexeme.GetType() != LexemeType::Identifier) {
         throw ErrorInCode(cur_lexeme);
     }
+    semantic.PushId(cur_lexeme, cur_type);
     Lexeme next = lexer.PeekLex();
     if (next.IsOperation() && next.GetContent() == "=") {
         NextLex();
         Assignment_exp();
+        Type exp_type = semantic.GetLastType();
+        if (cur_type == Type::Int || cur_type == Type::Double || cur_type == Type::Bool) {
+            if (exp_type != Type::Int && exp_type != Type::Bool && exp_type != Type::Double) {
+                throw SemanticAnalyzer::SemanticError(cur_lexeme, "Types are not matching.");
+            }
+        }
+        else if (cur_type != exp_type) {
+            throw SemanticAnalyzer::SemanticError(cur_lexeme, "Types are not matching.");
+        }
+        semantic.ClearSemStack();
     }
+    return cur_type;
 }
 
 void SyntacticAnalyzer::Vars() {
-    Var();
+    Type cur_type = Var();
     Lexeme next = lexer.PeekLex();
     while (next.IsComma()) {
         NextLex(2);
         if (!cur_lexeme.IsIdentifier()) {
             throw ErrorInCode(cur_lexeme);
         }
+        semantic.PushId(cur_lexeme, cur_type);
         Lexeme nextin = lexer.PeekLex();
         if (nextin.IsOperation() && nextin.GetContent() == "=") {
             NextLex();
             Assignment_exp();
+            Type exp_type = semantic.GetLastType();
+            semantic.ClearSemStack();
+            if (cur_type == Type::Int || cur_type == Type::Double || cur_type == Type::Bool) {
+                if (exp_type != Type::Int && exp_type != Type::Bool && exp_type != Type::Double) {
+                    throw SemanticAnalyzer::SemanticError(cur_lexeme, "Types are not matching.");
+                }
+            } else if (cur_type != exp_type) {
+                throw SemanticAnalyzer::SemanticError(cur_lexeme, "Types are not matching.");
+            }
+
         }
         next = lexer.PeekLex();
     }
@@ -71,7 +132,11 @@ void SyntacticAnalyzer::Vars() {
 }
 
 void SyntacticAnalyzer::Function() {
+    semantic.CreateScope();
     NextLex();
+    std::string name;
+    std::vector<Type> args;
+    Type return_type;
     if (!cur_lexeme.IsServiceWord() || cur_lexeme.GetContent() != "function") {
         throw ErrorInCode(cur_lexeme);
     }
@@ -79,23 +144,32 @@ void SyntacticAnalyzer::Function() {
     if (!cur_lexeme.IsFunctionType()) {
         throw ErrorInCode(cur_lexeme);
     }
+    return_type = GetTypeFromLexeme(cur_lexeme);
+    semantic.SetType(return_type);
     NextLex();
     if (!cur_lexeme.IsIdentifier()) {
         throw ErrorInCode(cur_lexeme);
     }
+    name = cur_lexeme.GetContent();
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != "(") {
         throw ErrorInCode(cur_lexeme);
     }
     Lexeme next = lexer.PeekLex();
     if (!next.IsBracket() || next.GetContent() != ")") {
-        Params();
+        Params(args);
     }
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
         throw ErrorInCode(cur_lexeme);
     }
+    semantic.PushFunc(name, return_type, args, cur_lexeme);
     Block();
+    if (!semantic.GetReturn()) {
+        throw SemanticAnalyzer::SemanticError(cur_lexeme, "Function must have return");
+    }
+    semantic.SetReturn(0);
+    semantic.ExitScope();
 }
 
 void SyntacticAnalyzer::Return() {
@@ -103,19 +177,41 @@ void SyntacticAnalyzer::Return() {
     if (!cur_lexeme.IsServiceWord() || cur_lexeme.GetContent() != "return") {
         throw ErrorInCode(cur_lexeme);
     }
+    Lexeme next = lexer.PeekLex();
+    if (next.IsPunctuation() && next.GetContent() == ";") {
+        if (semantic.GetReturnType() == Type::Void) {
+            semantic.SetReturn(1);
+            NextLex();
+            return;
+        }
+        throw SemanticAnalyzer::SemanticError(cur_lexeme, "return must be the same type as the function");
+    }
     Expression();
+    Type cur_type = semantic.GetLastType();
+    Type return_type = semantic.GetReturnType();
+    if (cur_type == Type::Int || cur_type == Type::Bool || cur_type == Type::Double) {
+        if (return_type != Type::Int && return_type != Type::Bool && return_type != Type::Double) {
+            throw SemanticAnalyzer::SemanticError(cur_lexeme, "return must be the same type as the function");
+        }
+    } else if (cur_type != return_type) {
+        throw SemanticAnalyzer::SemanticError(cur_lexeme, "return must be the same type as the function");
+    }
+    semantic.ClearSemStack();
+    semantic.SetReturn(1);
     NextLex();
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
         throw ErrorInCode(cur_lexeme);
     }
 }
 
-void SyntacticAnalyzer::Params() {
-    Function_var();
+void SyntacticAnalyzer::Params(std::vector<Type>& args) {
+    Type t = Function_var();
+    args.push_back(t);
     Lexeme next = lexer.PeekLex();
     while (next.IsComma()) {
         NextLex();
-        Function_var();
+        Type type = Function_var();
+        args.push_back(type);
         next = lexer.PeekLex();
     }
 }
@@ -133,6 +229,7 @@ void SyntacticAnalyzer::Input() {
     if (!cur_lexeme.IsIdentifier()) {
         throw ErrorInCode(cur_lexeme);
     }
+    semantic.CheckId(cur_lexeme);
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
         throw ErrorInCode(cur_lexeme);
@@ -153,6 +250,7 @@ void SyntacticAnalyzer::Output() {
         throw ErrorInCode(cur_lexeme);
     }
     Expression();
+    semantic.ClearSemStack();
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
         throw ErrorInCode(cur_lexeme);
@@ -168,6 +266,7 @@ void SyntacticAnalyzer::Break() {
     if (!cur_lexeme.IsServiceWord() || cur_lexeme.GetContent() != "break") {
         throw ErrorInCode(cur_lexeme);
     }
+    semantic.CheckCycle(cur_lexeme);
     NextLex();
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
         throw ErrorInCode(cur_lexeme);
@@ -179,6 +278,7 @@ void SyntacticAnalyzer::Continue() {
     if (!cur_lexeme.IsServiceWord() || cur_lexeme.GetContent() != "continue") {
         throw ErrorInCode(cur_lexeme);
     }
+    semantic.CheckCycle(cur_lexeme);
     NextLex();
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
         throw ErrorInCode(cur_lexeme);
@@ -196,10 +296,14 @@ void SyntacticAnalyzer::If() {
     }
     Expression();
     NextLex();
+    semantic.CheckBool(cur_lexeme);
+    semantic.ClearSemStack();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
         throw ErrorInCode(cur_lexeme);
     }
+    semantic.CreateScope();
     Block();
+    semantic.ExitScope();
     Lexeme next = lexer.PeekLex();
     while (next.IsServiceWord() && next.GetContent() == "elseif") {
         NextLex(2);
@@ -208,15 +312,21 @@ void SyntacticAnalyzer::If() {
         }
         Expression();
         NextLex();
+        semantic.CheckBool(cur_lexeme);
+        semantic.ClearSemStack();
         if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
             throw ErrorInCode(cur_lexeme);
         }
+        semantic.CreateScope();
         Block();
+        semantic.ExitScope();
         next = lexer.PeekLex();
     }
     if (next.IsServiceWord() && next.GetContent() == "else") {
         NextLex();
+        semantic.CreateScope();
         Block();
+        semantic.ExitScope();
     }
 }
 
@@ -231,11 +341,17 @@ void SyntacticAnalyzer::While() {
     }
     Expression();
     NextLex();
+    semantic.CheckBool(cur_lexeme);
+    semantic.ClearSemStack();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
         throw ErrorInCode(cur_lexeme);
 
     }
+    semantic.CreateScope();
+    semantic.EnterCycle();
     Block();
+    semantic.ExitSycle();
+    semantic.ExitScope();
 }
 
 void SyntacticAnalyzer::For() {
@@ -246,27 +362,32 @@ void SyntacticAnalyzer::For() {
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != "(") {
         throw ErrorInCode(cur_lexeme);
-
     }
     Expression();
     NextLex();
+    semantic.ClearSemStack();
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
         throw ErrorInCode(cur_lexeme);
 
     }
     Expression();
     NextLex();
+    semantic.CheckBool(cur_lexeme);
+    semantic.ClearSemStack();
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
         throw ErrorInCode(cur_lexeme);
-
     }
     Expression();
+    semantic.ClearSemStack();
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
         throw ErrorInCode(cur_lexeme);
-
     }
+    semantic.CreateScope();
+    semantic.EnterCycle();
     Block();
+    semantic.ExitSycle();
+    semantic.ExitScope();
 }
 
 void SyntacticAnalyzer::Switch() {
@@ -283,47 +404,62 @@ void SyntacticAnalyzer::Switch() {
     NextLex();
     if (!cur_lexeme.IsIdentifier()) {
         throw ErrorInCode(cur_lexeme);
-
+    }
+    Type type = semantic.CheckId(cur_lexeme);
+    if (type != Type::Int) {
+        throw SemanticAnalyzer::SemanticError(cur_lexeme, "Switch type must be integer");
     }
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
         throw ErrorInCode(cur_lexeme);
-
     }
     NextLex();
+    semantic.CreateScope();
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != "{") {
         throw ErrorInCode(cur_lexeme);
-
     }
+    semantic.EnterSwitch();
     Cases();
     NextLex();
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != "}") {
         throw ErrorInCode(cur_lexeme);
-
     }
+    semantic.ExitScope();
+    semantic.ExitSwitch();
 }
 
 void SyntacticAnalyzer::Cases() {
     NextLex();
     if (!cur_lexeme.IsServiceWord() || cur_lexeme.GetContent() != "case") {
         throw ErrorInCode(cur_lexeme);
-
     }
     NextLex();
     if (!cur_lexeme.IsLiteral()) {
         throw ErrorInCode(cur_lexeme);
-
     }
+    Type cur_type = GetTypeFromLexeme(cur_lexeme);
+    if (cur_type != Type::Int) {
+        throw SemanticAnalyzer::SemanticError(cur_lexeme, "Case type must be integer");
+    }
+    semantic.InsertSwitchCase(std::stoi(cur_lexeme.GetContent()), cur_lexeme);
+    semantic.CreateScope();
     Block();
+    semantic.ExitScope();
     Lexeme next = lexer.PeekLex();
     while (next.IsServiceWord() && next.GetContent() == "case") {
         NextLex();
         NextLex();
         if (!cur_lexeme.IsLiteral()) {
             throw ErrorInCode(cur_lexeme);
-
         }
+        cur_type = GetTypeFromLexeme(cur_lexeme);
+        if (cur_type != Type::Int) {
+            throw SemanticAnalyzer::SemanticError(cur_lexeme, "Case type must be integer");
+        }
+        semantic.InsertSwitchCase(std::stoi(cur_lexeme.GetContent()), cur_lexeme);
+        semantic.CreateScope();
         Block();
+        semantic.ExitScope();
         next = lexer.PeekLex();
     }
 }
@@ -371,10 +507,10 @@ void SyntacticAnalyzer::Command() {
     }
     else {
         Expression();
+        semantic.ClearSemStack();
         NextLex();
         if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
             throw ErrorInCode(cur_lexeme);
-
         }
     }
 }
@@ -400,19 +536,16 @@ void SyntacticAnalyzer::Block() {
 }
 
 void SyntacticAnalyzer::Main() {
+    semantic.CreateScope();
+    semantic.SetType(Type::Int);
     NextLex();
     if (!cur_lexeme.IsServiceWord() || cur_lexeme.GetContent() != "main") {
         throw ErrorInCode(cur_lexeme);
-
     }
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != "(") {
         throw ErrorInCode(cur_lexeme);
 
-    }
-    Lexeme next = lexer.PeekLex();
-    if (!next.IsBracket() || next.GetContent() != ")") {
-        Params();
     }
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
@@ -420,6 +553,7 @@ void SyntacticAnalyzer::Main() {
 
     }
     Block();
+    semantic.ExitScope();
 }
 
 void SyntacticAnalyzer::Expression() {
@@ -437,7 +571,9 @@ void SyntacticAnalyzer::Assignment_exp() {
     Lexeme next = lexer.PeekLex();
     while (next.AssignmentOp()) {
         NextLex();
+        semantic.PushSemStack(cur_lexeme);
         Logical_or_exp();
+        semantic.CheckBin();
         next = lexer.PeekLex();
     }
 }
@@ -447,7 +583,9 @@ void SyntacticAnalyzer::Logical_or_exp() {
     Lexeme next = lexer.PeekLex();
     while (next.IsOperation() && next.GetContent() == "||") {
         NextLex();
+        semantic.PushSemStack(cur_lexeme);
         Logical_and_exp();
+        semantic.CheckBin();
         next = lexer.PeekLex();
     }
 }
@@ -457,7 +595,9 @@ void SyntacticAnalyzer::Logical_and_exp() {
     Lexeme next = lexer.PeekLex();
     while (next.IsOperation() && next.GetContent() == "&&") {
         NextLex();
+        semantic.PushSemStack(cur_lexeme);
         Bitwise_or_exp();
+        semantic.CheckBin();
         next = lexer.PeekLex();
     }
 }
@@ -467,7 +607,9 @@ void SyntacticAnalyzer::Bitwise_or_exp() {
     Lexeme next = lexer.PeekLex();
     while (next.IsOperation() && next.GetContent() == "|") {
         NextLex();
+        semantic.PushSemStack(cur_lexeme);
         Bitwise_xor_exp();
+        semantic.CheckBin();
         next = lexer.PeekLex();
     }
 }
@@ -477,7 +619,9 @@ void SyntacticAnalyzer::Bitwise_xor_exp() {
     Lexeme next = lexer.PeekLex();
     while (next.IsOperation() && next.GetContent() == "^") {
         NextLex();
+        semantic.PushSemStack((cur_lexeme));
         Bitwise_and_exp();
+        semantic.CheckBin();
         next = lexer.PeekLex();
     }
 }
@@ -487,7 +631,9 @@ void SyntacticAnalyzer::Bitwise_and_exp() {
     Lexeme next = lexer.PeekLex();
     while (next.IsOperation() && next.GetContent() == "&") {
         NextLex();
+        semantic.PushSemStack(cur_lexeme);
         Equal_exp();
+        semantic.CheckBin();
         next = lexer.PeekLex();
     }
 }
@@ -497,7 +643,9 @@ void SyntacticAnalyzer::Equal_exp() {
     Lexeme next = lexer.PeekLex();
     while (next.EqualOp()) {
         NextLex();
+        semantic.PushSemStack(cur_lexeme);
         Compare_exp();
+        semantic.CheckBin();
         next = lexer.PeekLex();
     }
 }
@@ -507,7 +655,9 @@ void SyntacticAnalyzer::Compare_exp() {
     Lexeme next = lexer.PeekLex();
     while (next.CompareOp()) {
         NextLex();
+        semantic.PushSemStack(cur_lexeme);
         Bitwise_shift_exp();
+        semantic.CheckBin();
         next = lexer.PeekLex();
     }
 }
@@ -517,7 +667,9 @@ void SyntacticAnalyzer::Bitwise_shift_exp() {
     Lexeme next = lexer.PeekLex();
     while (next.BitwiseShiftOp()) {
         NextLex();
+        semantic.PushSemStack(cur_lexeme);
         Addition_exp();
+        semantic.CheckBin();
         next = lexer.PeekLex();
     }
 }
@@ -527,7 +679,9 @@ void SyntacticAnalyzer::Addition_exp() {
     Lexeme next = lexer.PeekLex();
     while (next.AdditionOp()){
         NextLex();
+        semantic.PushSemStack(cur_lexeme);
         Multy_exp();
+        semantic.CheckBin();
         next = lexer.PeekLex();
     }
 }
@@ -537,7 +691,9 @@ void SyntacticAnalyzer::Multy_exp() {
     Lexeme next = lexer.PeekLex();
     while (next.MultyOp()) {
         NextLex();
+        semantic.PushSemStack(cur_lexeme);
         Unary_exp();
+        semantic.CheckBin();
         next = lexer.PeekLex();
     }
 }
@@ -546,7 +702,9 @@ void SyntacticAnalyzer::Unary_exp() {
     Lexeme next = lexer.PeekLex();
     if (next.UnaryOp()) {
         NextLex();
+        semantic.PushSemStack(cur_lexeme);
         Unary_exp();
+        semantic.CheckUno();
         return;
     }
     Postfix_exp();
@@ -557,13 +715,16 @@ void SyntacticAnalyzer::Postfix_exp() {
     Lexeme next = lexer.PeekLex();
     if (next.PostfixOp()) {
         NextLex();
+        semantic.PushSemStack(cur_lexeme);
+        semantic.CheckPostfix();
     }
 }
 
 void SyntacticAnalyzer::Bracket_exp() {
    Lexeme next = lexer.PeekLex();
-   if (next.IsLiteral() || next.GetType() == LexemeType::StringLiteral) {
+   if (next.IsLiteral()) {
        NextLex();
+       semantic.PushSemStack(cur_lexeme);
        return;
    }
    if (next.IsBracket() && next.GetContent() == "(") {
@@ -572,7 +733,6 @@ void SyntacticAnalyzer::Bracket_exp() {
        NextLex();
        if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
            throw ErrorInCode(cur_lexeme);
-
        }
        return;
    }
@@ -584,6 +744,7 @@ void SyntacticAnalyzer::Bracket_exp() {
            Index();
        } else {
            NextLex();
+           semantic.PushSemStack(cur_lexeme);
        }
        return;
    }
@@ -624,41 +785,48 @@ void SyntacticAnalyzer::Function_call() {
     NextLex();
     if (!cur_lexeme.IsIdentifier()) {
         throw ErrorInCode(cur_lexeme);
-
     }
+    std::string name = cur_lexeme.GetContent();
+    std::vector<Type> fact_args;
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != "(") {
         throw ErrorInCode(cur_lexeme);
-
     }
     Lexeme next = lexer.PeekLex();
     if (next.IsBracket() && next.GetContent() == ")") {
         NextLex();
+        semantic.CheckFun(name, fact_args, cur_lexeme);
         return;
     }
-    Expression();
+    Assignment_exp();
+    fact_args.push_back(semantic.GetLastType());
+    semantic.ClearSemStack();
     next = lexer.PeekLex();
     while (next.IsComma()) {
         NextLex();
-        Expression();
+        Assignment_exp();
+        fact_args.push_back(semantic.GetLastType());
         next = lexer.PeekLex();
     }
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
        throw ErrorInCode(cur_lexeme);
-
     }
+    semantic.CheckFun(name, fact_args, cur_lexeme);
 }
 
-void SyntacticAnalyzer::Function_var() {
+Type SyntacticAnalyzer::Function_var() {
     NextLex();
     if (!cur_lexeme.IsType()) {
         throw ErrorInCode(cur_lexeme);
     }
+    Type cur = GetTypeFromLexeme(cur_lexeme);
     NextLex();
     if (cur_lexeme.GetType() != LexemeType::Identifier) {
         throw ErrorInCode(cur_lexeme);
     }
+    semantic.PushId(cur_lexeme, cur);
+    return cur;
 }
 
 void SyntacticAnalyzer::NextLex(int next_cnt) {

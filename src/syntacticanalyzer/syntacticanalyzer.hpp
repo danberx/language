@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include "semanticanalyzer.hpp"
 #include "../lexemeanalyzer/lexicalanalyzer.hpp"
 
 class SyntacticAnalyzer {
@@ -8,10 +9,10 @@ public:
     void Programm();
     void Expression();
     void Vars();
-    void Var();
+    Type Var();
     void Function();
     void Return();
-    void Params();
+    void Params(std::vector<Type>& args);
     void Main();
     void Block();
     void Input();
@@ -40,7 +41,7 @@ public:
     void Bracket_exp();
     void Index();
     void Function_call();
-    void Function_var();
+    Type Function_var();
 
     class ErrorInCode: public std::exception {
     public:
@@ -53,4 +54,5 @@ private:
     void NextLex(int next_cnt = 1);
     LexicalAnalyzer lexer;
     Lexeme cur_lexeme;
+    SemanticAnalyzer semantic;
 };

@@ -57,7 +57,15 @@ void LexicalAnalyzer::GetLexemes(const std::string &path) {
                 cur += buffer[i++];
             }
             if (ok) {
-                lexemes.emplace_back(cur, LexemeType::Literal, cnt_line_feed);
+                if (!point && cur.size() >= 9) {
+                    lexemes.emplace_back(cur, LexemeType::Other, cnt_line_feed);
+                } else {
+                    if (point) {
+                        lexemes.emplace_back(cur, LexemeType::DoubleLiteral, cnt_line_feed);
+                    } else {
+                        lexemes.emplace_back(cur, LexemeType::Literal, cnt_line_feed);
+                    }
+                }
             } else {
                 lexemes.emplace_back(cur, LexemeType::Other, cnt_line_feed);
             }

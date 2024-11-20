@@ -1,10 +1,11 @@
 #pragma once
 
 enum class Type {
+    None,
     Bool,
     Int,
     Double,
     String,
-    Function,
+    Void, // for function
     Array
 };

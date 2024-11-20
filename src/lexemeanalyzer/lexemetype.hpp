@@ -5,6 +5,7 @@ enum class LexemeType {
     Identifier,
     Literal,
     StringLiteral,
+    DoubleLiteral,
     Operation,
     Punctuation,
     Point,

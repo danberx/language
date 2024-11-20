@@ -32,6 +32,7 @@ public:
     bool IsBitwise();
     bool IsLogical();
     bool IsEqualCompare();
+    bool IsAddMulty();
 private:
     std::string content;
     LexemeType type;

@@ -88,7 +88,7 @@ bool Lexeme::IsBracket() {
 }
 
 bool Lexeme::IsLiteral() {
-    return type == LexemeType::Literal;
+    return type == LexemeType::Literal || type == LexemeType::StringLiteral || type == LexemeType::DoubleLiteral;
 }
 
 bool Lexeme::IsEnd() {
@@ -105,4 +105,8 @@ bool Lexeme::IsLogical() {
 
 bool Lexeme::IsEqualCompare() {
     return CompareOp() || EqualOp();
+}
+
+bool Lexeme::IsAddMulty() {
+    return AdditionOp() || MultyOp();
 }

@@ -2,8 +2,11 @@
 #include <vector>
 #include <map>
 #include <stack>
+#include <exception>
+#include <set>
 #include "lexeme.hpp"
 #include "borsem.hpp"
+#include "borfunc.hpp"
 
 class SemanticAnalyzer {
 public:
@@ -12,10 +15,26 @@ public:
     Type CheckId(const Lexeme& lex);
     void CreateScope();
     void ExitScope();
-    void PushFunc(std::string name, std::vector<std::pair<Type, const Lexeme&>> args);
-    bool CheckFunc(std::string name, std::vector<Type> args);
+    void PushFunc(std::string name, Type return_type, std::vector<Type>& formal_args, Lexeme& lex);
+    bool CheckFun(std::string name, std::vector<Type>& fact_args, Lexeme& lex);
     void PushSemStack(Lexeme& lex);
     bool CheckBin();
+    bool CheckUno();
+    bool CheckPostfix();
+    void ClearSemStack();
+    bool CheckBool(Lexeme& lex);
+    void EnterCycle();
+    void ExitSycle();
+    bool CheckCycle(Lexeme& lex);
+    void SetType(Type type);
+    Type GetReturnType();
+    void SetReturn(bool a);
+    bool GetReturn();
+    Type GetLastType();
+    void EnterSwitch();
+    void ExitSwitch();
+    void InsertSwitchCase(int a, Lexeme& lex);
+    void ClearCases();
     class SemanticError : public std::exception {
     public:
         const char* what() const noexcept;
@@ -42,15 +61,26 @@ private:
     private:
         BorSem identifiers;
     };
-
-
+    class FunctionsTable {
+    public:
+        FunctionsTable(): bor() {}
+        bool CheckFunc(std::string name, std::vector<Type>& fact_args, Lexeme& lex);
+        void PushFunc(std::string name, Type return_type, std::vector<Type>& formal_args, Lexeme& lex);
+    private:
+        FunctionBor bor;
+    };
+    FunctionsTable table_function;
     struct Node {
         std::vector<Node*> next;
         Node* prev;
         TID data;
         Node(): prev(nullptr) {}
     };
-
+    Type cur_return_type;
+    Type cur_switch_type;
     Node * root, * cur_scope;
     BorSem functions;
+    bool cur_have_return;
+    int cnt_cycles;
+    std::stack<std::set<int>> cur_cases;
 };
