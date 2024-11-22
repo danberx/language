@@ -18,6 +18,7 @@ public:
     void PushFunc(std::string name, Type return_type, std::vector<Type>& formal_args, Lexeme& lex);
     bool CheckFun(std::string name, std::vector<Type>& fact_args, Lexeme& lex);
     void PushSemStack(Lexeme& lex);
+    void PushSemStack(Type type);
     bool CheckBin();
     bool CheckUno();
     bool CheckPostfix();
@@ -34,7 +35,9 @@ public:
     void EnterSwitch();
     void ExitSwitch();
     void InsertSwitchCase(int a, Lexeme& lex);
+    void PopSemStack();
     void ClearCases();
+    Type GetFunctionType(std::string name);
     class SemanticError : public std::exception {
     public:
         const char* what() const noexcept;
@@ -66,6 +69,7 @@ private:
         FunctionsTable(): bor() {}
         bool CheckFunc(std::string name, std::vector<Type>& fact_args, Lexeme& lex);
         void PushFunc(std::string name, Type return_type, std::vector<Type>& formal_args, Lexeme& lex);
+        Type GetType(std::string name);
     private:
         FunctionBor bor;
     };

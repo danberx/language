@@ -79,6 +79,10 @@ void SemanticAnalyzer::PushSemStack(Lexeme &lex) {
     }
 }
 
+void SemanticAnalyzer::PushSemStack(Type type) {
+    SemStack.push(Element(type, 0));
+}
+
 bool SemanticAnalyzer::CheckBin() {
     Element right_operand = SemStack.top();
     SemStack.pop();
@@ -218,6 +222,18 @@ bool SemanticAnalyzer::GetReturn() {
 
 Type SemanticAnalyzer::GetLastType() {
     return SemStack.top().type;
+}
+
+Type SemanticAnalyzer::FunctionsTable::GetType(std::string name) {
+    return bor.GetType(name);
+}
+
+Type SemanticAnalyzer::GetFunctionType(std::string name) {
+    return table_function.GetType(name);
+}
+
+void SemanticAnalyzer::PopSemStack() {
+    SemStack.pop();
 }
 
 void SemanticAnalyzer::FunctionsTable::PushFunc(std::string name, Type return_type, std::vector<Type> &formal_args, Lexeme& lex) {

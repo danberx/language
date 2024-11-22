@@ -80,7 +80,7 @@ Type SyntacticAnalyzer::Var() {
     if (cur_lexeme.GetType() != LexemeType::Identifier) {
         throw ErrorInCode(cur_lexeme);
     }
-    semantic.PushId(cur_lexeme, cur_type);
+    Lexeme name = cur_lexeme;
     Lexeme next = lexer.PeekLex();
     if (next.IsOperation() && next.GetContent() == "=") {
         NextLex();
@@ -94,8 +94,9 @@ Type SyntacticAnalyzer::Var() {
         else if (cur_type != exp_type) {
             throw SemanticAnalyzer::SemanticError(cur_lexeme, "Types are not matching.");
         }
-        semantic.ClearSemStack();
+
     }
+    semantic.PushId(name, cur_type);
     return cur_type;
 }
 
@@ -107,13 +108,12 @@ void SyntacticAnalyzer::Vars() {
         if (!cur_lexeme.IsIdentifier()) {
             throw ErrorInCode(cur_lexeme);
         }
-        semantic.PushId(cur_lexeme, cur_type);
+        Lexeme name = cur_lexeme;
         Lexeme nextin = lexer.PeekLex();
         if (nextin.IsOperation() && nextin.GetContent() == "=") {
             NextLex();
             Assignment_exp();
             Type exp_type = semantic.GetLastType();
-            semantic.ClearSemStack();
             if (cur_type == Type::Int || cur_type == Type::Double || cur_type == Type::Bool) {
                 if (exp_type != Type::Int && exp_type != Type::Bool && exp_type != Type::Double) {
                     throw SemanticAnalyzer::SemanticError(cur_lexeme, "Types are not matching.");
@@ -121,8 +121,8 @@ void SyntacticAnalyzer::Vars() {
             } else if (cur_type != exp_type) {
                 throw SemanticAnalyzer::SemanticError(cur_lexeme, "Types are not matching.");
             }
-
         }
+        semantic.PushId(name, cur_type);
         next = lexer.PeekLex();
     }
     NextLex();
@@ -196,7 +196,6 @@ void SyntacticAnalyzer::Return() {
     } else if (cur_type != return_type) {
         throw SemanticAnalyzer::SemanticError(cur_lexeme, "return must be the same type as the function");
     }
-    semantic.ClearSemStack();
     semantic.SetReturn(1);
     NextLex();
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
@@ -365,7 +364,6 @@ void SyntacticAnalyzer::For() {
     }
     Expression();
     NextLex();
-    semantic.ClearSemStack();
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
         throw ErrorInCode(cur_lexeme);
 
@@ -373,12 +371,11 @@ void SyntacticAnalyzer::For() {
     Expression();
     NextLex();
     semantic.CheckBool(cur_lexeme);
-    semantic.ClearSemStack();
+
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
         throw ErrorInCode(cur_lexeme);
     }
     Expression();
-    semantic.ClearSemStack();
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
         throw ErrorInCode(cur_lexeme);
@@ -507,7 +504,6 @@ void SyntacticAnalyzer::Command() {
     }
     else {
         Expression();
-        semantic.ClearSemStack();
         NextLex();
         if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
             throw ErrorInCode(cur_lexeme);
@@ -796,23 +792,26 @@ void SyntacticAnalyzer::Function_call() {
     if (next.IsBracket() && next.GetContent() == ")") {
         NextLex();
         semantic.CheckFun(name, fact_args, cur_lexeme);
+        semantic.PushSemStack(semantic.GetFunctionType(name));
         return;
     }
     Assignment_exp();
     fact_args.push_back(semantic.GetLastType());
-    semantic.ClearSemStack();
+    semantic.PopSemStack();
     next = lexer.PeekLex();
     while (next.IsComma()) {
         NextLex();
         Assignment_exp();
         fact_args.push_back(semantic.GetLastType());
         next = lexer.PeekLex();
+        semantic.PopSemStack();
     }
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
        throw ErrorInCode(cur_lexeme);
     }
     semantic.CheckFun(name, fact_args, cur_lexeme);
+    semantic.PushSemStack(semantic.GetFunctionType(name));
 }
 
 Type SyntacticAnalyzer::Function_var() {

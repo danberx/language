@@ -11,7 +11,7 @@
 
 <expression> ::= <assignment-exp> { "," <assignment-exp> }
 <assignment-exp> ::= <logical-or-exp> { <assignment-op> <logicla-or-exp> }
-<assignment-op> ::= "=" | "+=" | "-=" | "*=" | "/=" | "|=" | "&=" | "^="
+<assignment-op> ::= "=" | "+=" | "-=" | "*=" | "/="
 <logical-or-exp> ::= <logical-and-exp> { "||" <logical-and-exp> }
 <logical-and-exp> ::= <bitwise-or-exp> { "&&" <bitwise-or-exp> }
 <bitwise-or-exp> ::= <bitwise-xor-exp> { "|" <bitwise-xor-exp> }

@@ -12,6 +12,7 @@ public:
     bool check(const std::string& str);
     void insert(const std::string& name, Type return_type, std::vector<Type>& types);
     std::vector<Type> get_args(std::string& name);
+    Type GetType(std::string);
 private:
     struct node {
         std::map<char, node*> next;

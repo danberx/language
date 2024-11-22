@@ -1,31 +1,53 @@
-function int func(int a, int b, string c) {
-    int res = 0;
-    for (i = 0; i < a; i++ + ++8) {
-       res += b;
-    }
-    res %= c;
-    if (+7) {return  c;}
+function int f() {
+    return 0;
 }
+
+function void a(string s, bool a, int t) {
+    while (t--) {
+        s += "a";
+    }
+    return;
+}
+
+function string func(string s) {
+    if (s == "abcdef") {
+        return "correct!" + s;
+    } else {
+    return "NO!";
+    }
+}
+
+function int f1(int r, string k) {
+    return r + 12;
+}
+
+int a123 = 123;
+string cur = "cur";
+
 main() {
     int a;
-    a = a + a;
-    a -= 1;
-    (a == a);
-    a = a + a * (a + 2 * a) + 3 * ++a;
-    func(a, b, c);
-    a;
-    while (a > 0) {
-        switch (a) {
-            case 2 {
-               a += 1;
-            }
-            case 1 {
-               a *= 2;
-               ;;;;;;;;;;
+    string b = "abcd";
+    b += func(b);
+    a += f() * 12 / f1(a % 13 + a123-- * 2, b) - ++a123;
+    if (b <= "0123456789") {
+        return 0;
+    }
+    while (b+="777",a != 0) {
+        int c;
+        int r;
+
+
+        for (c = 0; c < a * 10; ++c) {
+            ++r;
+            if (r % 2 == 0) {
+                break;
+            } else {
+                output(cur);
+                --a123;
             }
         }
+        cur += "012";
+        a -= f1(r, cur);
     }
-    a = b, swap,(a, b);
-    "dfgdsdgsd=sdgsdgsdgs";`
-    a[0][0];
+    a += a(b, a, a);
 }

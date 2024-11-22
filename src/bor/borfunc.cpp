@@ -31,3 +31,11 @@ std::vector<Type> FunctionBor::get_args(std::string &name) {
     }
     return cur->args;
 }
+
+Type FunctionBor::GetType(std::string name) {
+    node* cur = root;
+    for (char c: name) {
+        cur = cur->next[c];
+    }
+    return cur->return_type;
+}
