@@ -1,5 +1,9 @@
 main() {
-    string s;
-    input(s);
-    output(s);
+    int a;
+    if (a < 120) {
+        a = 2;
+    } else {
+        a = 1;
+    }
+
 }

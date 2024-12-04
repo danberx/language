@@ -50,12 +50,13 @@ Type GetTypeFromLexeme(const Lexeme& lex) {
 
 SyntacticAnalyzer::SyntacticAnalyzer(const std::string &path1, const std::string &path2, const std::string &path3):
     lexer(path1, path2, path3), cur_lexeme("NONE", LexemeType::Other, -1) {
+    start_programm = 0;
     try {
         Programm();
         std::cout << "OK!\n";
         poliz.PrintPoliz();
-        std::cout << "\n\n";
-        poliz.Run(semantic, start_programm);
+       // std::cout << "\n\n";
+       // poliz.Run(semantic, start_programm);
     }
     catch(ErrorInCode& err) {
         std::cout << "SYNTAX ERROR\n";
