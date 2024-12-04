@@ -11,5 +11,8 @@ enum class Action {
     FunctionCall,
     PushArray,
     Array,
-    SetScope
+    SetScope,
+    Return,
+    ExitScope,
+    GoScope
 };

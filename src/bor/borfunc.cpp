@@ -1,6 +1,6 @@
 #include "borfunc.hpp"
 
-void FunctionBor::insert(const std::string &name, Type return_type, std::vector<Type> &types, int poliz_adress) {
+void FunctionBor::insert(const std::string &name, Type return_type, std::vector<Type> &types, int poliz_adress, int index, std::vector<Lexeme>& lexes) {
     node* cur = root;
     for (char c: name) {
         if (cur->next.find(c) == cur->next.end()) {
@@ -12,6 +12,8 @@ void FunctionBor::insert(const std::string &name, Type return_type, std::vector<
     cur->return_type = return_type;
     cur->poliz_adress = poliz_adress;
     cur->args = std::move(types);
+    cur->tree_index = index;
+    cur->lexes = std::move(lexes);
 }
 
 bool FunctionBor::check(const std::string &str) {
@@ -33,10 +35,34 @@ std::vector<Type> FunctionBor::get_args(std::string &name) {
     return cur->args;
 }
 
+std::vector<Lexeme>& FunctionBor::GetArgumentsLexemes(std::string s) {
+    node* cur = root;
+    for (char c: s) {
+        cur = cur->next[c];
+    }
+    return cur->lexes;
+}
+
 Type FunctionBor::GetType(std::string name) {
     node* cur = root;
     for (char c: name) {
         cur = cur->next[c];
     }
     return cur->return_type;
+}
+
+int FunctionBor::get_index(std::string s) {
+    node* cur = root;
+    for (char c: s) {
+        cur = cur->next[c];
+    }
+    return cur->tree_index;
+}
+
+int FunctionBor::get_poliz_adress(std::string s) {
+    node* cur = root;
+    for (char c : s) {
+        cur = cur->next[c];
+    }
+    return cur->poliz_adress;
 }

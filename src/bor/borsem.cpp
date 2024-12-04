@@ -56,12 +56,20 @@ std::string* BorSem::get_array_content(std::string s, int indx) {
     return &cur->arr[indx];
 }
 
+std::vector<std::string>* BorSem::get_array(std::string s) {
+    node* cur = root;
+    for (auto c: s) {
+        cur = cur->next[c];
+    }
+    return &cur->arr;
+}
+
 void BorSem::set_size(std::string s, int sz) {
     node* cur = root;
     for (auto c: s) {
         cur = cur->next[c];
     }
-    cur->arr.resize(sz);
+    cur->arr.resize(sz, "0");
 }
 
 void BorSem::push(std::string s, std::string content) {
@@ -70,6 +78,26 @@ void BorSem::push(std::string s, std::string content) {
         cur = cur->next[c];
     }
     cur->arr.push_back(content);
+}
+
+void BorSem::copy(BorSem::node *&ans, BorSem::node *&cur) {
+    if (cur == nullptr) return;
+    ans->arr = cur->arr;
+    ans->is_terminal= cur->is_terminal;
+    ans->type = cur->type;
+    ans->content = cur->content;
+    for (auto el: cur->next) {
+        ans->next[el.first] = new node;
+        copy(ans->next[el.first], cur->next[el.first]);
+    }
+}
+
+BorSem BorSem::Copy() {
+    BorSem ans;
+    ans.root = new node;
+    node* cur = root;
+    copy(ans.root, cur);
+    return ans;
 }
 
 BorSem::BorSem(): root(new node) {};

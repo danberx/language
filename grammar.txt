@@ -1,4 +1,4 @@
-<program> ::= <vars> <program> | <function> <program> | <main>
+<program> ::= <vars> <program> | <function> <program> | <array> <programm> | <main>
 
 <var> ::= <type> <identifier> ["=" <assignment-expression>]
 <vars> ::= <var> {"," <identifier> ["=" <assignment-expression>]} ";"

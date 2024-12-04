@@ -10,9 +10,11 @@ public:
     bool check(const std::string &str);
     BorSem();
     std::string* get_content(std::string s);
+    std::vector<std::string>* get_array(std::string s);
     std::string* get_array_content(std::string s, int indx);
     void set_size(std::string s, int sz);
     void push(std::string s, std::string content);
+    BorSem Copy();
 private:
     struct node {
         std::map<char, node*> next;
@@ -22,5 +24,6 @@ private:
         std::vector<std::string> arr; // for Array-types
         node(): next({}), is_terminal(false), content("0") {}
     };
+    void copy(node*& ans, node*& cur);
     node * root;
 };

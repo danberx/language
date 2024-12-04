@@ -20,9 +20,12 @@ public:
     void PushPushArray();
     void PushMakeArray();
     void PushSetScope(SemanticAnalyzer::Node* sc);
+    void PushReturn();
     int GetCur();
     void PrintPoliz();
-    void Run(SemanticAnalyzer& semantic, int index);
+    void Run(SemanticAnalyzer& semantic, int index, SemanticAnalyzer::Node* root);
+    void PushExitScope();
+    void PushGoScope(int index);
 private:
     struct PolizElement {
         Action action;
@@ -38,7 +41,14 @@ private:
         Lexeme lexeme;
         Type type;
     };
-    std::stack<Element> counting_stack;
-    int cur_index;
+    struct CallElement {
+        int index;
+        std::stack<Element> cur_counting_stack;
+        SemanticAnalyzer::Node* from;
+        Type function_type;
+        CallElement() {}
+    };
+    std::stack<CallElement> call_stack;
 
+    int cur_index;
 };

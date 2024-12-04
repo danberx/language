@@ -58,8 +58,8 @@ int SemanticAnalyzer::GetScopes() {
     return cur_scope->next.size();
 }
 
-void SemanticAnalyzer::PushFunc(std::string name, Type return_type, std::vector<Type>& formal_args, Lexeme& lex, int adress) {
-    table_function.PushFunc(name, return_type, formal_args, lex, adress);
+void SemanticAnalyzer::PushFunc(std::string name, Type return_type, std::vector<Type>& formal_args, Lexeme& lex, int adress, int index, std::vector<Lexeme>& lexes) {
+    table_function.PushFunc(name, return_type, formal_args, lex, adress, index, lexes);
 }
 
 bool SemanticAnalyzer::CheckFun(std::string name, std::vector<Type>& fact_args, Lexeme& lex) {
@@ -247,12 +247,11 @@ void SemanticAnalyzer::PopSemStack() {
     SemStack.pop();
 }
 
-void SemanticAnalyzer::FunctionsTable::PushFunc(std::string name, Type return_type, std::vector<Type> &formal_args, Lexeme& lex, int adress) {
+void SemanticAnalyzer::FunctionsTable::PushFunc(std::string name, Type return_type, std::vector<Type> &formal_args, Lexeme& lex, int adress, int index, std::vector<Lexeme>& lexes) {
     if (bor.check(name)) {
         throw SemanticError(lex, "There is already a function with the same name.");
     }
-    bor.insert(name, return_type, formal_args, adress);
-
+    bor.insert(name, return_type, formal_args, adress, index, lexes);
 }
 
 bool SemanticAnalyzer::FunctionsTable::CheckFunc(std::string name, std::vector<Type> &fact_args, Lexeme& lex) {
@@ -349,6 +348,17 @@ std::string* SemanticAnalyzer::GetContent(Lexeme &lex) {
     return check_scope->data.GetContent(lex);
 }
 
+std::vector<std::string>* SemanticAnalyzer::GetArray(Lexeme &lex) {
+    Node* check_scope = cur_scope;
+    while (check_scope != nullptr && !check_scope->data.Check(lex)) {
+        check_scope = check_scope->prev;
+    }
+    if (check_scope == nullptr) {
+        throw SemanticError(lex, "There is no identifier with this name");
+    }
+    return check_scope->data.GetArray(lex);
+}
+
 std::string* SemanticAnalyzer::GetArrayContent(Lexeme &lex, int index) {
     Node* check_scope = cur_scope;
     while (check_scope != nullptr && !check_scope->data.Check(lex)) {
@@ -358,6 +368,10 @@ std::string* SemanticAnalyzer::GetArrayContent(Lexeme &lex, int index) {
         throw SemanticError(lex, "There is no identifier with this name");
     }
     return check_scope->data.GetArrayContent(lex, index);
+}
+
+int SemanticAnalyzer::GetPolizAdress(Lexeme &lex) {
+    return table_function.GetPolizAdress(lex);
 }
 
 void SemanticAnalyzer::SetSize(Lexeme &lex, int sz) {
@@ -386,6 +400,10 @@ std::string* SemanticAnalyzer::TID::GetContent(Lexeme &lex) {
     return identifiers.get_content(lex.GetContent());
 }
 
+std::vector<std::string>* SemanticAnalyzer::TID::GetArray(Lexeme &lex) {
+    return identifiers.get_array(lex.GetContent());
+}
+
 std::string* SemanticAnalyzer::TID::GetArrayContent(Lexeme &lex, int index) {
     return identifiers.get_array_content(lex.GetContent(), index);
 }
@@ -404,4 +422,66 @@ void SemanticAnalyzer::SetCurScope(SemanticAnalyzer::Node *sc) {
 
 SemanticAnalyzer::Node* SemanticAnalyzer::GetCurScope() {
     return cur_scope;
+}
+
+void SemanticAnalyzer::GoScope(int index) {
+    cur_scope = cur_scope->next[index];
+}
+
+int SemanticAnalyzer::GetIndexScope() {
+    return cur_scope->next.size();
+}
+
+SemanticAnalyzer::Node* SemanticAnalyzer::GetRoot() {
+    return root;
+}
+
+int SemanticAnalyzer::FunctionsTable::GetTreeIndex(Lexeme& lex) {
+    return bor.get_index(lex.GetContent());
+}
+
+int SemanticAnalyzer::FunctionsTable::GetPolizAdress(Lexeme &lex) {
+    return bor.get_poliz_adress(lex.GetContent());
+}
+
+std::vector<Lexeme>& SemanticAnalyzer::FunctionsTable::GetLexes(Lexeme &lex) {
+    return bor.GetArgumentsLexemes(lex.GetContent());
+}
+
+std::vector<Lexeme>& SemanticAnalyzer::GetArgsLexemes(Lexeme &lex) {
+    return table_function.GetLexes(lex);
+}
+
+void SemanticAnalyzer::copy(SemanticAnalyzer::Node *&ans, Node*& p, SemanticAnalyzer::Node*& cur) {
+    if (cur == nullptr) return;
+    ans->prev = p;
+    ans->data = cur->data.GetCopy();
+    if (cur->next.size() == 0) return;
+    ans->next.resize(cur->next.size());
+    for (int i = 0; i < cur->next.size(); ++i) {
+        ans->next[i] = new Node;
+        copy(ans->next[i], ans, cur->next[i]);
+    }
+}
+
+SemanticAnalyzer::Node* SemanticAnalyzer::Copy(Lexeme& lex) {
+    int index = table_function.GetTreeIndex(lex);
+    Node* cur = root->next[index];
+    Node* ans = new Node;
+    copy(ans, root, cur);
+    return ans;
+}
+
+void SemanticAnalyzer::GoRoot() {
+    while (cur_scope->prev != nullptr) cur_scope = cur_scope->prev;
+}
+
+SemanticAnalyzer::TID SemanticAnalyzer::TID::GetCopy() {
+    TID ans;
+    ans.identifiers = identifiers.Copy();
+    return ans;
+}
+
+int SemanticAnalyzer::GetRootIndex() {
+    return root->next.size();
 }

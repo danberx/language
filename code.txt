@@ -1,9 +1,73 @@
-main() {
-    int a;
-    if (a < 120) {
-        a = 2;
-    } else {
-        a = 1;
-    }
+int sz = 100;
+intArray a (sz);
+intArray t(sz * 4);
 
+function void build(int l, int r, int v) {
+    if (l == r - 1) {
+        t[v] = a[l];
+        return;
+    }
+    int m = (l + r) / 2;
+    build(l, m, v * 2 + 1);
+    build(m, r, v * 2 + 2);
+    t[v] = t[v * 2 + 1] + t[v * 2 + 2];
+    return;
+}
+
+function int get(int v, int l, int r, int askl, int askr) {
+    if (l >= askr || r <= askl) {
+        return 0;
+    }
+    if (l >= askl && r <= askr) {
+        return t[v];
+    }
+    int m = (l + r) / 2;
+    return (get(2 * v + 1, l, m, askl, askr) + get(2 * v + 2, m, r, askl, askr));
+}
+
+function void change(int v, int l, int r, int pos, int val) {
+    if (l == r - 1) {
+        t[v] = val;
+        return;
+    }
+    int m = (l + r) / 2;
+    if (pos < m) {
+        change(2 * v + 1, l, m, pos, val);
+    } else {
+        change(2 * v + 2, m, r, pos, val);
+    }
+    t[v] = t[2 * v + 1] + t[2 * v + 2];
+    return;
+}
+
+main () {
+    int n;
+    input(n);
+    int i = 0;
+    for (i = 0; i < n; ++i) {
+        int x;
+        input(x);
+        a[i] = x;
+    }
+    build(0, n, 0);
+    int q;
+    input(q);
+    for (i = 0; i < q; ++i) {
+        int t;
+        input(t);
+        if (t == 1) {
+            int l, r;
+            input(l);
+            input(r);
+            l--;
+            output(get(0, 0, n, l, r));
+            output("\n");
+        }
+        else {
+            int pos, val;
+            input(pos);
+            input(val);
+            change(0, 0, n, pos - 1, val);
+        }
+    }
 }
