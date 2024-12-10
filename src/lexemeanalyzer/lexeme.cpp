@@ -19,8 +19,13 @@ bool Lexeme::IsType() {
     return (content == "int" || content == "double" || content == "string" || content == "bool" || content == "char" || content == "array");
 }
 
+bool Lexeme::IsArrayType() {
+    if (!IsServiceWord()) return false;
+    return (content == "intArray" || content == "doubleArray" || content == "boolArray" || content == "charArray");
+}
+
 bool Lexeme::IsFunctionType() {
-    return IsType() || (IsServiceWord() && content == "void");
+    return IsType() || (IsServiceWord() && content == "void") || IsArrayType();
 }
 
 bool Lexeme::AssignmentOp() {

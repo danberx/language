@@ -6,7 +6,6 @@ double
 string
 bool
 char
-array
 return
 input
 output
@@ -19,3 +18,8 @@ break
 continue
 switch
 case
+push
+intArray
+doubleArray
+boolArray
+charArray

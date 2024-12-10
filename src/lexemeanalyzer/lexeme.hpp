@@ -33,6 +33,7 @@ public:
     bool IsLogical();
     bool IsEqualCompare();
     bool IsAddMulty();
+    bool IsArrayType();
 private:
     std::string content;
     LexemeType type;

@@ -6,6 +6,10 @@ enum class Type {
     Int,
     Double,
     String,
+    Char,
     Void, // for function
-    Array
+    IntArray,
+    BoolArray,
+    CharArray,
+    DoubleArray
 };

@@ -2,10 +2,12 @@
 
 <var> ::= <type> <identifier> ["=" <assignment-expression>]
 <vars> ::= <var> {"," <identifier> ["=" <assignment-expression>]} ";"
-<type> ::= "int" | "double" | "string" | "bool" | "char" | "array"
+<type> ::= "int" | "double" | "string" | "bool" | "char"
+<array> ::= <array-type> <identifier> "(" <expression> ")"
+<array-type> ::= "intArray" | "doubleArray" | "boolArray" | "charArray"
 
 <function> ::= "function" <function-type> <identifier> "(" [<params>] ")" <block>
-<function-type> ::= <type> | "void"
+<function-type> ::= <type> | "void" | "array-type"
 <return> ::= "return" <expression> ";"
 <params> ::= <var> {"," <var>}
 
@@ -32,7 +34,7 @@
 <postfix-exp> ::= <bracket-exp> [ <postfix-op> ]
 <postfix-op> ::= "++" | "--"
 <bracket-exp> ::= "(" <expression> ")" | <identifier> | <literal> | <function-call> | <index>
-<index> ::= <identifier> "[" <expression> "]" { "[" <expression> "]" }
+<index> ::= <identifier> "[" <expression> "]"
 <function-call> ::= <identifier> "(" [ <expression> {, <expression> } ] ")"
 
 <input> ::= "input" "(" <identifier> ")" ";"
@@ -44,6 +46,7 @@
 <continue> ::= "continue" ";"
 <switch> ::= "switch" "(" <identifier> ")" "{" <cases> "}"
 <cases> ::= "case" <literal> ":" <block> { "case" <literal> ":" <block> }
-<command> ::= <expression> ";" | <if> | <while> | <for> | <break> | <continue> | <input> | <output> | <return> | <vars> | <switch>
+<push-array> ::= push <identifier> "(" <expression> ")"
+<command> ::= <expression> ";" | <if> | <while> | <for> | <break> | <continue> | <input> | <output> | <return> | <vars> | <switch> | <push>
 <block> ::= "{" { <command> } "}"
 <main> ::= "main" "(" [params] ")" <block>

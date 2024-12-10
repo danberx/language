@@ -42,6 +42,8 @@ public:
     void Index();
     void Function_call();
     Type Function_var();
+    void Array();
+    void PushArray();
 
     class ErrorInCode: public std::exception {
     public:

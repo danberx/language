@@ -106,13 +106,13 @@ bool SemanticAnalyzer::CheckBin() {
             }
             SemStack.push(Element(left_operand.type, 1));
         } else if (left_operand.type == Type::String) {
-            if (right_operand.type != Type::String || !(operation.content == "=" || operation.content == "+=")) {
-                throw SemanticError(operation.lex, "Types are not matching.");
+            if (operation.content != "=" && operation.content != "+=") {
+                throw SemanticAnalyzer::SemanticError(operation.lex, "Types are not matching.");
             } else {
-                SemStack.push(Element(right_operand.type, 1));
+                if (right_operand.type != Type::Char && right_operand.type != Type::String) {
+                    throw SemanticAnalyzer::SemanticError(operation.lex, "Types are not matching.");
+                } else SemStack.push(Element(right_operand.type, 1));
             }
-        } else if (left_operand.type == Type::Array) {
-            throw SemanticError(operation.lex, "Arrays do not have an assignment operator.");
         }
     } else if (operation.lex.IsBitwise()) {
         if (left_operand.type != Type::Int && left_operand.type != Type::Bool || right_operand.type != Type::Int && right_operand.type != Type::Bool) {
@@ -137,8 +137,8 @@ bool SemanticAnalyzer::CheckBin() {
             SemStack.push((Element(Type::Bool, 0)));
         }
     } else if (operation.lex.IsAddMulty()) {
-        if (left_operand.type == Type::String || right_operand.type == Type::String) {
-            if (operation.content != "+" || left_operand.type != Type::String || right_operand.type != Type::String) {
+        if (left_operand.type == Type::String) {
+            if (operation.content != "+" || left_operand.type != Type::String || right_operand.type != Type::String && right_operand.type != Type::Char) {
                 throw SemanticError(operation.lex, "Types are not matching.");
             }
             SemStack.push(Element(Type::String, 0));

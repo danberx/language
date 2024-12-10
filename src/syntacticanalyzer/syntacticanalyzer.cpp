@@ -14,8 +14,20 @@ Type GetTypeFromLexeme(const Lexeme& lex) {
         if (lex.GetContent() == "string") {
             return Type::String;
         }
-        if (lex.GetContent() == "array") {
-            return Type::Array;
+        if (lex.GetContent() == "intArray") {
+            return Type::IntArray;
+        }
+        if (lex.GetContent() == "boolArray") {
+            return Type::BoolArray;
+        }
+        if (lex.GetContent() == "charArray") {
+            return Type::CharArray;
+        }
+        if (lex.GetContent() == "doubleArray") {
+            return Type::DoubleArray;
+        }
+        if (lex.GetContent() == "char") {
+            return Type::Char;
         }
         if (lex.GetContent() == "bool") {
             return Type::Bool;
@@ -24,7 +36,11 @@ Type GetTypeFromLexeme(const Lexeme& lex) {
         }
     } else {
         if (lex.GetType() == LexemeType::Literal) return Type::Int;
-        else if(lex.GetType() == LexemeType::StringLiteral) return Type::String;
+        else if(lex.GetType() == LexemeType::StringLiteral) {
+            if (lex.GetContent().size() == 1) {
+                return Type::Char;
+            } else return Type::String;
+        }
         else if (lex.GetType() == LexemeType::DoubleLiteral) return Type::Double;
         else {
             throw SemanticAnalyzer::SemanticError(lex);
@@ -118,7 +134,10 @@ void SyntacticAnalyzer::Vars() {
                 if (exp_type != Type::Int && exp_type != Type::Bool && exp_type != Type::Double) {
                     throw SemanticAnalyzer::SemanticError(cur_lexeme, "Types are not matching.");
                 }
-            } else if (cur_type != exp_type) {
+            } else if (cur_type == Type::String && exp_type != Type::Char && exp_type != Type::String) {
+                throw SemanticAnalyzer::SemanticError(cur_lexeme, "Types are not matching.");
+            }
+            else if (cur_type != exp_type) {
                 throw SemanticAnalyzer::SemanticError(cur_lexeme, "Types are not matching.");
             }
         }
@@ -127,6 +146,65 @@ void SyntacticAnalyzer::Vars() {
     }
     NextLex();
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
+        throw ErrorInCode(cur_lexeme);
+    }
+}
+
+void SyntacticAnalyzer::Array() {
+    NextLex();
+    if (!cur_lexeme.IsArrayType()) {
+        throw ErrorInCode(cur_lexeme);
+    }
+    Type type = GetTypeFromLexeme(cur_lexeme);
+    NextLex();
+    if (cur_lexeme.GetType() != LexemeType::Identifier) {
+        throw ErrorInCode(cur_lexeme);
+    }
+    semantic.PushId(cur_lexeme, type);
+    NextLex();
+    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "(") {
+        throw ErrorInCode(cur_lexeme);
+    }
+    Expression();
+    Type exp_type = semantic.GetLastType();
+    if (exp_type != Type::Int && exp_type != Type::Double && exp_type != Type::Bool) {
+        throw SemanticAnalyzer::SemanticError(cur_lexeme, "Array size must be Int (or Bool or Double)");
+    }
+    NextLex();
+    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ")") {
+        throw ErrorInCode(cur_lexeme);
+    }
+}
+
+void SyntacticAnalyzer::PushArray() {
+    NextLex();
+    if (cur_lexeme.GetType() != LexemeType::ServiceWord || cur_lexeme.GetContent() != "push") {
+        throw ErrorInCode(cur_lexeme);
+    }
+    NextLex();
+    if (cur_lexeme.GetType() != LexemeType::Identifier) {
+        throw ErrorInCode(cur_lexeme);
+    }
+    Type array_type = semantic.CheckId(cur_lexeme);
+    if (array_type != Type::DoubleArray && array_type != Type::IntArray && array_type != Type::CharArray && array_type != Type::BoolArray) {
+        throw SemanticAnalyzer::SemanticError(cur_lexeme, "Not array type");
+    }
+    NextLex();
+    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "(") {
+        throw ErrorInCode(cur_lexeme);
+    }
+    Expression();
+    Type add_type = semantic.GetLastType();
+    if (array_type == Type::CharArray) {
+        if (add_type != Type::Char) {
+            throw SemanticAnalyzer::SemanticError(cur_lexeme, "types are not matching");
+        }
+    }
+    else if (add_type != Type::Int && add_type != Type::Double && add_type != Type::Bool) {
+        throw SemanticAnalyzer::SemanticError(cur_lexeme, "types are not matching");
+    }
+    NextLex();
+    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ")") {
         throw ErrorInCode(cur_lexeme);
     }
 }
@@ -490,9 +568,14 @@ void SyntacticAnalyzer::Command() {
         }
         else if (next.GetContent() == "switch") {
             Switch();
+        } else if (next.GetContent() == "push") {
+            PushArray();
         }
         else if (next.IsType()) {
             Vars();
+        }
+        else if (next.IsArrayType()) {
+            Array();
         }
         else {
             throw ErrorInCode(next);
@@ -751,30 +834,36 @@ void SyntacticAnalyzer::Index() {
     NextLex();
     if (!cur_lexeme.IsIdentifier()) {
         throw ErrorInCode(cur_lexeme);
-
+    }
+    Type type = semantic.CheckId(cur_lexeme);
+    if (type != Type::IntArray && type != Type::BoolArray && type != Type::CharArray && type != Type::DoubleArray) {
+        throw SemanticAnalyzer::SemanticError(cur_lexeme, "Not array type");
     }
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != "[") {
         throw ErrorInCode(cur_lexeme);
-
     }
     Expression();
+    Type index_type = semantic.GetLastType();
+    if (index_type != Type::Int && index_type != Type::Bool && index_type != Type::Double) {
+        throw SemanticAnalyzer::SemanticError(cur_lexeme, "Array index must be Int (or Bool or Double)");
+    }
+    semantic.PopSemStack();
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != "]") {
         throw ErrorInCode(cur_lexeme);
-
     }
-    Lexeme next = lexer.PeekLex();
-    while (next.IsBracket() && next.GetContent() == "[") {
-        NextLex();
-        Expression();
-        NextLex();
-        if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != "]") {
-            throw ErrorInCode(cur_lexeme);
-
-        }
-        next = lexer.PeekLex();
+    Type array_type;
+    if (type == Type::IntArray) {
+        array_type = Type::Int;
+    } else if (type == Type::DoubleArray) {
+        array_type = Type::Double;
+    } else if (type == Type::BoolArray) {
+        array_type = Type::Bool;
+    } else {
+        array_type = Type::Char;
     }
+    semantic.PushSemStack(array_type);
 }
 
 void SyntacticAnalyzer::Function_call() {
