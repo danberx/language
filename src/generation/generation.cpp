@@ -8,3 +8,7 @@ void Generation::PushPoliz(Generation::Command command, int ind) {
         ind = cur++;
     poliz.push_back(command);
 }
+
+int Generation::GetCur() {
+    return cur;
+}

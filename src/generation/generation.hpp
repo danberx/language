@@ -11,8 +11,9 @@ public:
         bool is_command;
         int command_number;
     };
-
+    int GetCur();
     void PushPoliz(Command command, int ind = -1);
+
 
 private:
     int cur;
