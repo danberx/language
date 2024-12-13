@@ -7,7 +7,7 @@ class Lexeme {
 public:
     Lexeme(std::string cont, LexemeType t, int l);
     Lexeme() = default;
-
+    void SetContent(std::string s);
     const std::string& GetContent() const;
     LexemeType GetType() const;
     int GetLine() const;

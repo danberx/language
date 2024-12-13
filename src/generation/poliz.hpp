@@ -1,17 +1,27 @@
-#include "priorities.hpp"
 #include <vector>
 #include <string>
+#include <iostream>
+#include "lexeme.hpp"
+#include "action.hpp"
 
 class Poliz {
 public:
-    Poliz();
+    Poliz(): poliz() {}
+    void PushOperation(Lexeme& lex);
+    void PushOperand(Lexeme& lex, bool is_adress);
+    void SetGoTo(int index, int adress, bool false_goto);
+    void Skip();
+    void PushIndex();
+    void PushInput();
+    void PushOutput();
+    void PushFunctionCall(Lexeme& lex);
+    void PrintPoliz();
 private:
     struct PolizElement {
-        bool is_operation;
-        bool is_address; // for operands a += 3;
-        bool is_lvalue; // for oparands  (true if identifier, false if literal)
-        std::string content;
-        PolizElement(std::string content, bool lvalue, bool adress): content(content), is_lvalue(lvalue), address(adress) {}
-        PolizElement(std::string content): content(content), is_operation
+        Action action;
+        int goto_adress; // for goto (! and !F)
+        bool is_lvalue; // for operands
+        Lexeme lexeme;
     };
+    std::vector<PolizElement> poliz;
 };

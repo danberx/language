@@ -2,6 +2,7 @@
 #include <iostream>
 #include "semanticanalyzer.hpp"
 #include "../lexemeanalyzer/lexicalanalyzer.hpp"
+#include "../generation/poliz.hpp"
 
 class SyntacticAnalyzer {
 public:
@@ -57,4 +58,5 @@ private:
     LexicalAnalyzer lexer;
     Lexeme cur_lexeme;
     SemanticAnalyzer semantic;
+    Poliz poliz;
 };

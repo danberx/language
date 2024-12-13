@@ -14,6 +14,10 @@ int Lexeme::GetLine() const {
     return line;
 }
 
+void Lexeme::SetContent(std::string s) {
+    content = s;
+}
+
 bool Lexeme::IsType() {
     if (!IsServiceWord()) return false;
     return (content == "int" || content == "double" || content == "string" || content == "bool" || content == "char" || content == "array");
