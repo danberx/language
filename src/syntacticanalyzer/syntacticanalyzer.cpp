@@ -192,6 +192,7 @@ void SyntacticAnalyzer::PushArray() {
         throw ErrorInCode(cur_lexeme);
     }
     Type array_type = semantic.CheckId(cur_lexeme);
+    poliz.PushOperand(cur_lexeme, true);
     if (array_type != Type::DoubleArray && array_type != Type::IntArray && array_type != Type::CharArray && array_type != Type::BoolArray) {
         throw SemanticAnalyzer::SemanticError(cur_lexeme, "Not array type");
     }
@@ -213,6 +214,7 @@ void SyntacticAnalyzer::PushArray() {
     if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ")") {
         throw ErrorInCode(cur_lexeme);
     }
+    poliz.PushPushArray();
 }
 
 void SyntacticAnalyzer::Function() {
@@ -247,7 +249,7 @@ void SyntacticAnalyzer::Function() {
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
         throw ErrorInCode(cur_lexeme);
     }
-    semantic.PushFunc(name, return_type, args, cur_lexeme);
+    semantic.PushFunc(name, return_type, args, cur_lexeme, poliz.GetCur());
     Block();
     if (!semantic.GetReturn()) {
         throw SemanticAnalyzer::SemanticError(cur_lexeme, "Function must have return");
@@ -313,6 +315,7 @@ void SyntacticAnalyzer::Input() {
         throw ErrorInCode(cur_lexeme);
     }
     semantic.CheckId(cur_lexeme);
+    poliz.PushOperand(cur_lexeme, true);
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
         throw ErrorInCode(cur_lexeme);
@@ -321,6 +324,7 @@ void SyntacticAnalyzer::Input() {
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
         throw ErrorInCode(cur_lexeme);
     }
+    poliz.PushInput();
 }
 
 void SyntacticAnalyzer::Output() {
@@ -342,6 +346,7 @@ void SyntacticAnalyzer::Output() {
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
         throw ErrorInCode(cur_lexeme);
     }
+    poliz.PushOutput();
 }
 
 void SyntacticAnalyzer::Break() {
@@ -354,6 +359,8 @@ void SyntacticAnalyzer::Break() {
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
         throw ErrorInCode(cur_lexeme);
     }
+    set_breaks.top().push_back(poliz.GetCur());
+    poliz.Skip();
 }
 
 void SyntacticAnalyzer::Continue() {
@@ -366,6 +373,8 @@ void SyntacticAnalyzer::Continue() {
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
         throw ErrorInCode(cur_lexeme);
     }
+    set_continues.top().push_back(poliz.GetCur());
+    poliz.Skip();
 }
 
 void SyntacticAnalyzer::If() {
@@ -378,6 +387,8 @@ void SyntacticAnalyzer::If() {
         throw ErrorInCode(cur_lexeme);
     }
     Expression();
+    int false_pointer = poliz.GetCur();
+    poliz.Skip();
     NextLex();
     semantic.CheckBool(cur_lexeme);
     semantic.ClearSemStack();
@@ -385,7 +396,10 @@ void SyntacticAnalyzer::If() {
         throw ErrorInCode(cur_lexeme);
     }
     semantic.CreateScope();
+    std::vector<int> set_adresses;
     Block();
+    set_adresses.push_back(poliz.GetCur());
+    poliz.Skip();
     semantic.ExitScope();
     Lexeme next = lexer.PeekLex();
     while (next.IsServiceWord() && next.GetContent() == "elseif") {
@@ -393,7 +407,11 @@ void SyntacticAnalyzer::If() {
         if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != "(") {
             throw ErrorInCode(cur_lexeme);
         }
+        poliz.SetGoTo(false_pointer, poliz.GetCur(), true);
+
         Expression();
+        false_pointer = poliz.GetCur();
+        poliz.Skip();
         NextLex();
         semantic.CheckBool(cur_lexeme);
         semantic.ClearSemStack();
@@ -402,14 +420,21 @@ void SyntacticAnalyzer::If() {
         }
         semantic.CreateScope();
         Block();
+        set_adresses.push_back(poliz.GetCur());
+        poliz.Skip();
         semantic.ExitScope();
         next = lexer.PeekLex();
     }
+    poliz.SetGoTo(false_pointer, poliz.GetCur(), true);
     if (next.IsServiceWord() && next.GetContent() == "else") {
         NextLex();
         semantic.CreateScope();
         Block();
         semantic.ExitScope();
+    }
+    int adress = poliz.GetCur();
+    for (int i = 0; i < set_adresses.size(); ++i) {
+        poliz.SetGoTo(set_adresses[i], adress, false);
     }
 }
 
@@ -422,7 +447,10 @@ void SyntacticAnalyzer::While() {
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != "(") {
         throw ErrorInCode(cur_lexeme);
     }
+    int start_adress = poliz.GetCur();
     Expression();
+    int false_pointer = poliz.GetCur();
+    poliz.Skip();
     NextLex();
     semantic.CheckBool(cur_lexeme);
     semantic.ClearSemStack();
@@ -432,9 +460,23 @@ void SyntacticAnalyzer::While() {
     }
     semantic.CreateScope();
     semantic.EnterCycle();
+    set_breaks.push({});
+    set_continues.push({});
     Block();
+    poliz.Skip();
+    poliz.SetGoTo(poliz.GetCur() - 1, start_adress, false);
+    int end_adress = poliz.GetCur();
+    poliz.SetGoTo(false_pointer, end_adress, true);
+    for (auto el: set_breaks.top()) {
+        poliz.SetGoTo(el, end_adress, false);
+    }
+    for (auto el: set_continues.top()) {
+        poliz.SetGoTo(el, start_adress, false);
+    }
     semantic.ExitSycle();
     semantic.ExitScope();
+    set_continues.pop();
+    set_breaks.pop();
 }
 
 void SyntacticAnalyzer::For() {
@@ -452,23 +494,46 @@ void SyntacticAnalyzer::For() {
         throw ErrorInCode(cur_lexeme);
 
     }
+    int condition_adress = poliz.GetCur();
     Expression();
+    int false_pointer = poliz.GetCur();
+    poliz.Skip();
+    int true_pointer = poliz.GetCur();
+    poliz.Skip();
     NextLex();
     semantic.CheckBool(cur_lexeme);
-
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != ";") {
         throw ErrorInCode(cur_lexeme);
     }
+    int go_adress = poliz.GetCur();
     Expression();
+    poliz.Skip();
+    poliz.SetGoTo(poliz.GetCur() - 1, condition_adress, false);
+
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
         throw ErrorInCode(cur_lexeme);
     }
     semantic.CreateScope();
     semantic.EnterCycle();
+    poliz.SetGoTo(true_pointer, poliz.GetCur(), false);
+    set_breaks.push({});
+    set_continues.push({});
     Block();
+    poliz.Skip();
+    poliz.SetGoTo(poliz.GetCur() - 1, go_adress, false);
+    int end_adress = poliz.GetCur();
+    poliz.SetGoTo(false_pointer, end_adress, true);
     semantic.ExitSycle();
     semantic.ExitScope();
+    for (auto el: set_breaks.top()) {
+        poliz.SetGoTo(el, end_adress, false);
+    }
+    for (auto el: set_continues.top()) {
+        poliz.SetGoTo(el, go_adress, false);
+    }
+    set_continues.pop();
+    set_breaks.pop();
 }
 
 void SyntacticAnalyzer::Switch() {
@@ -490,6 +555,7 @@ void SyntacticAnalyzer::Switch() {
     if (type != Type::Int) {
         throw SemanticAnalyzer::SemanticError(cur_lexeme, "Switch type must be integer");
     }
+    switch_identifiers.push(cur_lexeme);
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
         throw ErrorInCode(cur_lexeme);
@@ -501,6 +567,7 @@ void SyntacticAnalyzer::Switch() {
     }
     semantic.EnterSwitch();
     Cases();
+    switch_identifiers.pop();
     NextLex();
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != "}") {
         throw ErrorInCode(cur_lexeme);
@@ -523,8 +590,18 @@ void SyntacticAnalyzer::Cases() {
         throw SemanticAnalyzer::SemanticError(cur_lexeme, "Case type must be integer");
     }
     semantic.InsertSwitchCase(std::stoi(cur_lexeme.GetContent()), cur_lexeme);
+    poliz.PushOperand(switch_identifiers.top(), 1);
+    poliz.PushOperand(cur_lexeme, false);
+    Lexeme cmp("==", LexemeType::Operation, cur_lexeme.GetLine());
+    poliz.PushOperation(cmp);
+    int false_pointer = poliz.GetCur();
+    poliz.Skip();
+
     semantic.CreateScope();
+    std::vector<int> adresses;
     Block();
+    adresses.push_back(poliz.GetCur());
+    poliz.Skip();
     semantic.ExitScope();
     Lexeme next = lexer.PeekLex();
     while (next.IsServiceWord() && next.GetContent() == "case") {
@@ -537,12 +614,24 @@ void SyntacticAnalyzer::Cases() {
         if (cur_type != Type::Int) {
             throw SemanticAnalyzer::SemanticError(cur_lexeme, "Case type must be integer");
         }
+        poliz.SetGoTo(false_pointer, poliz.GetCur(), true);
         semantic.InsertSwitchCase(std::stoi(cur_lexeme.GetContent()), cur_lexeme);
+        poliz.PushOperand(switch_identifiers.top(), 1);
+        poliz.PushOperand(cur_lexeme, false);
+        poliz.PushOperation(cmp);
+        false_pointer = poliz.GetCur();
+        poliz.Skip();
         semantic.CreateScope();
         Block();
+        adresses.push_back(poliz.GetCur());
+        poliz.Skip();
         semantic.ExitScope();
         next = lexer.PeekLex();
     }
+    for (auto el: adresses) {
+        poliz.SetGoTo(el, poliz.GetCur(), false);
+    }
+    poliz.SetGoTo(false_pointer, poliz.GetCur(), true);
 }
 
 void SyntacticAnalyzer::Command() {
@@ -635,8 +724,8 @@ void SyntacticAnalyzer::Main() {
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
         throw ErrorInCode(cur_lexeme);
-
     }
+    start_programm = poliz.GetCur();
     Block();
     semantic.ExitScope();
 }

@@ -16,8 +16,10 @@ public:
     void Params(std::vector<Type>& args);
     void Main();
     void Block();
+
     void Input();
     void Output();
+
     void Break();
     void Continue();
     void If();
@@ -26,6 +28,7 @@ public:
     void Switch();
     void Cases();
     void Command();
+
     void Assignment_exp();
     void Logical_or_exp();
     void Logical_and_exp();
@@ -41,8 +44,10 @@ public:
     void Postfix_exp();
     void Bracket_exp();
     void Index();
+
     void Function_call();
     Type Function_var();
+
     void Array();
     void PushArray();
 
@@ -54,9 +59,13 @@ public:
         std::string text_err;
     };
 private:
+    std::stack<Lexeme> switch_identifiers;
+    std::stack<std::vector<int>> set_breaks;
+    std::stack<std::vector<int>> set_continues;
     void NextLex(int next_cnt = 1);
     LexicalAnalyzer lexer;
     Lexeme cur_lexeme;
     SemanticAnalyzer semantic;
     Poliz poliz;
+    int start_programm;
 };

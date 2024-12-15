@@ -15,6 +15,8 @@ public:
     void PushInput();
     void PushOutput();
     void PushFunctionCall(Lexeme& lex);
+    void PushPushArray();
+    int GetCur();
     void PrintPoliz();
 private:
     struct PolizElement {

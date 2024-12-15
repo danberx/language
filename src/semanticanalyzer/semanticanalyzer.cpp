@@ -47,8 +47,8 @@ void SemanticAnalyzer::ExitScope() {
     cur_scope = cur_scope->prev;
 }
 
-void SemanticAnalyzer::PushFunc(std::string name, Type return_type, std::vector<Type>& formal_args, Lexeme& lex) {
-    table_function.PushFunc(name, return_type, formal_args, lex);
+void SemanticAnalyzer::PushFunc(std::string name, Type return_type, std::vector<Type>& formal_args, Lexeme& lex, int adress) {
+    table_function.PushFunc(name, return_type, formal_args, lex, adress);
 }
 
 bool SemanticAnalyzer::CheckFun(std::string name, std::vector<Type>& fact_args, Lexeme& lex) {
@@ -236,11 +236,11 @@ void SemanticAnalyzer::PopSemStack() {
     SemStack.pop();
 }
 
-void SemanticAnalyzer::FunctionsTable::PushFunc(std::string name, Type return_type, std::vector<Type> &formal_args, Lexeme& lex) {
+void SemanticAnalyzer::FunctionsTable::PushFunc(std::string name, Type return_type, std::vector<Type> &formal_args, Lexeme& lex, int adress) {
     if (bor.check(name)) {
         throw SemanticError(lex, "There is already a function with the same name.");
     }
-    bor.insert(name, return_type, formal_args);
+    bor.insert(name, return_type, formal_args, adress);
 
 }
 

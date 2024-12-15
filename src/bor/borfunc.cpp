@@ -1,6 +1,6 @@
 #include "borfunc.hpp"
 
-void FunctionBor::insert(const std::string &name, Type return_type, std::vector<Type> &types) {
+void FunctionBor::insert(const std::string &name, Type return_type, std::vector<Type> &types, int poliz_adress) {
     node* cur = root;
     for (char c: name) {
         if (cur->next.find(c) == cur->next.end()) {
@@ -10,6 +10,7 @@ void FunctionBor::insert(const std::string &name, Type return_type, std::vector<
     }
     cur->is_terminal = 1;
     cur->return_type = return_type;
+    cur->poliz_adress = poliz_adress;
     cur->args = std::move(types);
 }
 

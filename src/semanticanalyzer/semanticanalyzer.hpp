@@ -15,7 +15,7 @@ public:
     Type CheckId(const Lexeme& lex);
     void CreateScope();
     void ExitScope();
-    void PushFunc(std::string name, Type return_type, std::vector<Type>& formal_args, Lexeme& lex);
+    void PushFunc(std::string name, Type return_type, std::vector<Type>& formal_args, Lexeme& lex, int adress);
     bool CheckFun(std::string name, std::vector<Type>& fact_args, Lexeme& lex);
     void PushSemStack(Lexeme& lex);
     void PushSemStack(Type type);
@@ -68,7 +68,7 @@ private:
     public:
         FunctionsTable(): bor() {}
         bool CheckFunc(std::string name, std::vector<Type>& fact_args, Lexeme& lex);
-        void PushFunc(std::string name, Type return_type, std::vector<Type>& formal_args, Lexeme& lex);
+        void PushFunc(std::string name, Type return_type, std::vector<Type>& formal_args, Lexeme& lex, int adress);
         Type GetType(std::string name);
     private:
         FunctionBor bor;

@@ -10,7 +10,7 @@ class FunctionBor {
 public:
     FunctionBor(): root(new node) {}
     bool check(const std::string& str);
-    void insert(const std::string& name, Type return_type, std::vector<Type>& types);
+    void insert(const std::string& name, Type return_type, std::vector<Type>& types, int poliz_adress);
     std::vector<Type> get_args(std::string& name);
     Type GetType(std::string);
 private:
@@ -19,6 +19,7 @@ private:
         bool is_terminal;
         Type return_type;
         std::vector<Type> args;
+        int poliz_adress;
         node(): is_terminal(0), next({}) {}
     };
     node* root;

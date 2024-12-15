@@ -56,6 +56,16 @@ void Poliz::PushFunctionCall(Lexeme& lex) {
     poliz.push_back(cur);
 }
 
+void Poliz::PushPushArray() {
+    PolizElement cur;
+    cur.action = Action::PushArray;
+    poliz.push_back(cur);
+}
+
+int Poliz::GetCur() {
+    return poliz.size();
+}
+
 void Poliz::PrintPoliz() {
     for (int i = 0; i < poliz.size(); ++i) {
         PolizElement cur = poliz[i];
@@ -78,6 +88,8 @@ void Poliz::PrintPoliz() {
             std::cout << "index";
         } else if (cur.action == Action::FunctionCall) {
             std::cout << cur.lexeme.GetContent();
+        } else if (cur.action == Action::PushArray) {
+            std::cout << "push";
         }
         std::cout << "  ";
     }

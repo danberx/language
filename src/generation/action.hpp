@@ -8,5 +8,6 @@ enum class Action {
     Index,
     Goto,
     FalseGoto,
-    FunctionCall
+    FunctionCall,
+    PushArray
 };
