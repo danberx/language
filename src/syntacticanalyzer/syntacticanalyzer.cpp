@@ -166,9 +166,10 @@ void SyntacticAnalyzer::Array() {
     if (cur_lexeme.GetType() != LexemeType::Identifier) {
         throw ErrorInCode(cur_lexeme);
     }
+    poliz.PushOperand(cur_lexeme, true);
     semantic.PushId(cur_lexeme, type);
     NextLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "(") {
+    if (!cur_lexeme.IsBracket() ||  cur_lexeme.GetContent() != "(") {
         throw ErrorInCode(cur_lexeme);
     }
     Expression();
@@ -177,9 +178,10 @@ void SyntacticAnalyzer::Array() {
         throw SemanticAnalyzer::SemanticError(cur_lexeme, "Array size must be Int (or Bool or Double)");
     }
     NextLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ")") {
+    if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
         throw ErrorInCode(cur_lexeme);
     }
+    poliz.PushMakeArray();
 }
 
 void SyntacticAnalyzer::PushArray() {
@@ -197,7 +199,7 @@ void SyntacticAnalyzer::PushArray() {
         throw SemanticAnalyzer::SemanticError(cur_lexeme, "Not array type");
     }
     NextLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != "(") {
+    if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != "(") {
         throw ErrorInCode(cur_lexeme);
     }
     Expression();
@@ -211,7 +213,7 @@ void SyntacticAnalyzer::PushArray() {
         throw SemanticAnalyzer::SemanticError(cur_lexeme, "types are not matching");
     }
     NextLex();
-    if (cur_lexeme.GetType() != LexemeType::Punctuation || cur_lexeme.GetContent() != ")") {
+    if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
         throw ErrorInCode(cur_lexeme);
     }
     poliz.PushPushArray();

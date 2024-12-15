@@ -62,6 +62,12 @@ void Poliz::PushPushArray() {
     poliz.push_back(cur);
 }
 
+void Poliz::PushMakeArray() {
+    PolizElement cur;
+    cur.action = Action::Array;
+    poliz.push_back(cur);
+}
+
 int Poliz::GetCur() {
     return poliz.size();
 }
@@ -90,6 +96,8 @@ void Poliz::PrintPoliz() {
             std::cout << cur.lexeme.GetContent();
         } else if (cur.action == Action::PushArray) {
             std::cout << "push";
+        } else if (cur.action == Action::Array) {
+            std::cout << "make_array";
         }
         std::cout << "  ";
     }

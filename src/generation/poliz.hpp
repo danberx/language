@@ -16,6 +16,7 @@ public:
     void PushOutput();
     void PushFunctionCall(Lexeme& lex);
     void PushPushArray();
+    void PushMakeArray();
     int GetCur();
     void PrintPoliz();
 private:

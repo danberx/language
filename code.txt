@@ -1,17 +1,6 @@
 main() {
-    int a;
-    int i = 0;
-    switch (a) {
-        case 1 {
-            i++;
-        }
-        case 2 {
-            i += 2;
-        }
-        case 3 {
-            i += 3;
-        }
-    }
-
-    output(i);
+    int a = 15;
+    intArray arr (a);
+    push arr (2 + a * 15);
+    output(arr[a - 1]);
 }
