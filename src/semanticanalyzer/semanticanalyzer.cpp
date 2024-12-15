@@ -79,8 +79,8 @@ void SemanticAnalyzer::PushSemStack(Lexeme &lex) {
     }
 }
 
-void SemanticAnalyzer::PushSemStack(Type type) {
-    SemStack.push(Element(type, 0));
+void SemanticAnalyzer::PushSemStack(Type type, bool lval) {
+    SemStack.push(Element(type, lval));
 }
 
 bool SemanticAnalyzer::CheckBin() {
@@ -138,7 +138,7 @@ bool SemanticAnalyzer::CheckBin() {
         }
     } else if (operation.lex.IsAddMulty()) {
         if (left_operand.type == Type::String) {
-            if (operation.content != "+" || left_operand.type != Type::String || right_operand.type != Type::String && right_operand.type != Type::Char) {
+            if (operation.content != "+"  || right_operand.type != Type::String && right_operand.type != Type::Char) {
                 throw SemanticError(operation.lex, "Types are not matching.");
             }
             SemStack.push(Element(Type::String, 0));
@@ -325,4 +325,64 @@ SemanticAnalyzer::SemanticError::SemanticError(const Lexeme& lex, std::string te
 
 const char *SemanticAnalyzer::SemanticError::what() const noexcept {
     return text_err.c_str();
+}
+
+std::string* SemanticAnalyzer::GetContent(Lexeme &lex) {
+    Node* check_scope = cur_scope;
+    while (check_scope != nullptr && !check_scope->data.Check(lex)) {
+        check_scope = check_scope->prev;
+    }
+    if (check_scope == nullptr) {
+        throw SemanticError(lex, "There is no identifier with this name");
+    }
+    return check_scope->data.GetContent(lex);
+}
+
+std::string* SemanticAnalyzer::GetArrayContent(Lexeme &lex, int index) {
+    Node* check_scope = cur_scope;
+    while (check_scope != nullptr && !check_scope->data.Check(lex)) {
+        check_scope = check_scope->prev;
+    }
+    if (check_scope == nullptr) {
+        throw SemanticError(lex, "There is no identifier with this name");
+    }
+    return check_scope->data.GetArrayContent(lex, index);
+}
+
+void SemanticAnalyzer::SetSize(Lexeme &lex, int sz) {
+    Node* check_scope = cur_scope;
+    while (check_scope != nullptr && !check_scope->data.Check(lex)) {
+        check_scope = check_scope->prev;
+    }
+    if (check_scope == nullptr) {
+        throw SemanticError(lex, "There is no identifier with this name");
+    }
+    check_scope->data.SetSize(lex, sz);
+}
+
+void SemanticAnalyzer::ArrayPush(Lexeme &lex, std::string content) {
+    Node* check_scope = cur_scope;
+    while (check_scope != nullptr && !check_scope->data.Check(lex)) {
+        check_scope = check_scope->prev;
+    }
+    if (check_scope == nullptr) {
+        throw SemanticError(lex, "There is no identifier with this name");
+    }
+    check_scope->data.Push(lex, content);
+}
+
+std::string* SemanticAnalyzer::TID::GetContent(Lexeme &lex) {
+    return identifiers.get_content(lex.GetContent());
+}
+
+std::string* SemanticAnalyzer::TID::GetArrayContent(Lexeme &lex, int index) {
+    return identifiers.get_array_content(lex.GetContent(), index);
+}
+
+void SemanticAnalyzer::TID::SetSize(Lexeme &lex, int sz) {
+    identifiers.set_size(lex.GetContent(), sz);
+}
+
+void SemanticAnalyzer::TID::Push(Lexeme &lex, std::string content) {
+    identifiers.push(lex.GetContent(), content);
 }

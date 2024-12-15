@@ -40,4 +40,36 @@ bool BorSem::check(const std::string &str) {
     return cur->is_terminal;
 }
 
+std::string* BorSem::get_content(std::string s) {
+    node* cur = root;
+    for (auto c: s) {
+        cur = cur->next[c];
+    }
+    return &cur->content;
+}
+
+std::string* BorSem::get_array_content(std::string s, int indx) {
+    node* cur = root;
+    for (auto c: s) {
+        cur = cur->next[c];
+    }
+    return &cur->arr[indx];
+}
+
+void BorSem::set_size(std::string s, int sz) {
+    node* cur = root;
+    for (auto c: s) {
+        cur = cur->next[c];
+    }
+    cur->arr.resize(sz);
+}
+
+void BorSem::push(std::string s, std::string content) {
+    node* cur = root;
+    for (auto c: s) {
+        cur = cur->next[c];
+    }
+    cur->arr.push_back(content);
+}
+
 BorSem::BorSem(): root(new node) {};

@@ -1,8 +1,10 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <stack>
 #include "lexeme.hpp"
 #include "action.hpp"
+#include "semanticanalyzer.hpp"
 
 class Poliz {
 public:
@@ -19,6 +21,7 @@ public:
     void PushMakeArray();
     int GetCur();
     void PrintPoliz();
+    void Run(SemanticAnalyzer& semantic);
 private:
     struct PolizElement {
         Action action;
@@ -27,4 +30,13 @@ private:
         Lexeme lexeme;
     };
     std::vector<PolizElement> poliz;
+    struct Element {
+        std::string* lvalue_content; // for lvalue
+        std::string rvalue_content; // for literals, rvalue
+        Lexeme lexeme;
+        Type type;
+    };
+    std::stack<Element> counting_stack;
+    int cur_index;
+
 };

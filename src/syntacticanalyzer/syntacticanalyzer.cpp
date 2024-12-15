@@ -316,7 +316,10 @@ void SyntacticAnalyzer::Input() {
     if (!cur_lexeme.IsIdentifier()) {
         throw ErrorInCode(cur_lexeme);
     }
-    semantic.CheckId(cur_lexeme);
+    Type type = semantic.CheckId(cur_lexeme);
+    if (type == Type::Void || type == Type::CharArray || type == Type::BoolArray || type == Type::IntArray || type == Type::DoubleArray) {
+        throw SemanticAnalyzer::SemanticError(cur_lexeme, "Can't input this type");
+    }
     poliz.PushOperand(cur_lexeme, true);
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
@@ -339,6 +342,10 @@ void SyntacticAnalyzer::Output() {
         throw ErrorInCode(cur_lexeme);
     }
     Expression();
+    Type type = semantic.GetLastType();
+    if (type == Type::Void || type == Type::CharArray || type == Type::BoolArray || type == Type::IntArray || type == Type::DoubleArray) {
+        throw SemanticAnalyzer::SemanticError(cur_lexeme, "Can't output this type");
+    }
     semantic.ClearSemStack();
     NextLex();
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
@@ -993,7 +1000,7 @@ void SyntacticAnalyzer::Index() {
     } else {
         array_type = Type::Char;
     }
-    semantic.PushSemStack(array_type);
+    semantic.PushSemStack(array_type, true);
     poliz.PushIndex();
 }
 
@@ -1014,6 +1021,7 @@ void SyntacticAnalyzer::Function_call() {
         NextLex();
         semantic.CheckFun(name, fact_args, cur_lexeme);
         semantic.PushSemStack(semantic.GetFunctionType(name));
+        poliz.PushFunctionCall(func);
         return;
     }
     Assignment_exp();

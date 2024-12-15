@@ -18,7 +18,7 @@ public:
     void PushFunc(std::string name, Type return_type, std::vector<Type>& formal_args, Lexeme& lex, int adress);
     bool CheckFun(std::string name, std::vector<Type>& fact_args, Lexeme& lex);
     void PushSemStack(Lexeme& lex);
-    void PushSemStack(Type type);
+    void PushSemStack(Type type, bool lval = 0);
     bool CheckBin();
     bool CheckUno();
     bool CheckPostfix();
@@ -37,7 +37,11 @@ public:
     void InsertSwitchCase(int a, Lexeme& lex);
     void PopSemStack();
     void ClearCases();
+    std::string* GetContent(Lexeme& lex);
     Type GetFunctionType(std::string name);
+    std::string* GetArrayContent(Lexeme& lex, int index);
+    void SetSize(Lexeme& lex, int sz);
+    void ArrayPush(Lexeme& lex, std::string content);
     class SemanticError : public std::exception {
     public:
         const char* what() const noexcept;
@@ -61,6 +65,10 @@ private:
         void PushId(const Lexeme& lex, Type type);
         Type CheckId(const Lexeme& lex);
         bool Check(const Lexeme& lex);
+        std::string* GetContent(Lexeme& lex);
+        std::string* GetArrayContent(Lexeme& lex, int index);
+        void SetSize(Lexeme& lex, int sz);
+        void Push(Lexeme& lex, std::string content);
     private:
         BorSem identifiers;
     };

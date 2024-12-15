@@ -47,6 +47,6 @@
 <switch> ::= "switch" "(" <identifier> ")" "{" <cases> "}"
 <cases> ::= "case" <literal> ":" <block> { "case" <literal> ":" <block> }
 <push-array> ::= push <identifier> "(" <expression> ")"
-<command> ::= <expression> ";" | <if> | <while> | <for> | <break> | <continue> | <input> | <output> | <return> | <vars> | <switch> | <push>
+<command> ::= <expression> ";" | <if> | <while> | <for> | <break> | <continue> | <input> | <output> | <return> | <vars> | <switch> | <push> | <array>
 <block> ::= "{" { <command> } "}"
 <main> ::= "main" "(" [params] ")" <block>

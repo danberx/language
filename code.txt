@@ -1,6 +1,11 @@
+function int f() {
+    return 1;
+}
+
+function void fr(){
+return;
+}
+
 main() {
-    int a = 15;
-    intArray arr (a);
-    push arr (2 + a * 15);
-    output(arr[a - 1]);
+    int a;
 }
