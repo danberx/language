@@ -68,9 +68,9 @@ SyntacticAnalyzer::SyntacticAnalyzer(const std::string &path1, const std::string
     catch(std::string& err) {
         std::cout << err;
     }
-    catch (...) {
+    /*catch (...) {
         std::cout << "Something wrong";
-    }
+    }*/
 }
 
 void SyntacticAnalyzer::Programm() {

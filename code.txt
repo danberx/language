@@ -1,5 +1,7 @@
 main() {
-    string s;
-    input(s);
-    output(s);
+    int a;
+    for (a = 0; a < 10; a = (a + 2) * 2 / 2 - 1) {
+        output(a);
+        output("\n");
+    }
 }

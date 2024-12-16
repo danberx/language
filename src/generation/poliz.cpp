@@ -116,8 +116,10 @@ void Poliz::Run(SemanticAnalyzer& semantic, int index) {
     cur_index = index;
     while (cur_index < poliz.size()) {
         PolizElement cur = poliz[cur_index];
+
         if (cur.action == Action::Element) {
             if (cur.is_lvalue) {
+
                 Type type = semantic.CheckId(cur.lexeme);
                 if (type == Type::IntArray || type == Type::DoubleArray || type == Type::BoolArray || type == Type::CharArray) {
                     Element el;
@@ -133,11 +135,13 @@ void Poliz::Run(SemanticAnalyzer& semantic, int index) {
                 }
             }
             else {
+
                 Element el;
                 if (cur.lexeme.GetType() == LexemeType::DoubleLiteral) el.type = Type::Double;
                 else if (cur.lexeme.GetType() == LexemeType::StringLiteral) el.type = Type::String;
                 else if (cur.lexeme.GetType() == LexemeType::Literal) el.type = Type::Int;
                 el.rvalue_content = cur.lexeme.GetContent();
+
                 counting_stack.push(el);
             }
             cur_index++;
@@ -175,12 +179,14 @@ void Poliz::Run(SemanticAnalyzer& semantic, int index) {
             int sz = std::stoi(counting_stack.top().rvalue_content);
             counting_stack.pop();
             semantic.SetSize(counting_stack.top().lexeme, sz);
+            cur_index++;
         } else if (cur.action == Action::PushArray) {
             Element el = counting_stack.top();
             counting_stack.pop();
             Element arr = counting_stack.top();
             counting_stack.pop();
             semantic.ArrayPush(arr.lexeme, el.rvalue_content);
+            cur_index++;
         } else if (cur.action == Action::Operation) {
             std::string operation = cur.lexeme.GetContent();
             if (operation.size() > 2) { // unary operation
@@ -292,21 +298,29 @@ void Poliz::Run(SemanticAnalyzer& semantic, int index) {
                     counting_stack.push(el);
                 }
             } else  { // binary operation
-                Element operand1 = counting_stack.top();
-                counting_stack.pop();
+
                 Element operand2 = counting_stack.top();
+                counting_stack.pop();
+                Element operand1 = counting_stack.top();
                 counting_stack.pop();
                 double opr1_d = stod(operand1.rvalue_content), opr2_d = stod(operand2.rvalue_content);
                 int opr1_i = stoi(operand1.rvalue_content), opr2_i = stoi(operand2.rvalue_content);
                 Element res;
+
+
+
                 if (operation == "+" || operation == "-" || operation == "/" || operation == "*" || operation == "|" || operation == "&" || operation == "%" || operation == "<<" || operation == ">>" ||
                     operation == "+=" || operation == "-=" || operation == "/=" || operation == "*=" || operation == "%=") {
                     if ((operand1.type == Type::Int || operand1.type == Type::Bool) && (operand2.type == Type::Int || operand2.type == Type::Bool)) {
-                        res.type == Type::Int;
+
+                        res.type = Type::Int;
+
                         if (operation == "+" || operation == "+=") {
+
                             res.rvalue_content = std::to_string(opr1_i + opr2_i);
                         }
                         else if (operation == "-" || operation == "-=") {
+
                             res.rvalue_content = std::to_string(opr1_i - opr2_i);
                         }
                         else if (operation == "/" || operation == "/=") {
@@ -332,7 +346,7 @@ void Poliz::Run(SemanticAnalyzer& semantic, int index) {
                         }
                     }
                     else {
-                        res.type == Type::Double;
+                        res.type = Type::Double;
                         if (operation == "+" || operation == "+=") {
                             res.rvalue_content = std::to_string(opr1_d + opr2_d);
                         }
@@ -352,40 +366,48 @@ void Poliz::Run(SemanticAnalyzer& semantic, int index) {
                 }
                 else if (operation == ">") {
                     res.type = Type::Bool;
-                    res.rvalue_content = opr1_d > opr2_d;
+                    res.rvalue_content = std::to_string(opr1_d > opr2_d);
                 }
                 else if (operation == "<") {
                     res.type = Type::Bool;
-                    res.rvalue_content = opr1_d < opr2_d;
+                    res.rvalue_content = std::to_string(opr1_d < opr2_d);
                 }
                 else if (operation == ">=") {
                     res.type = Type::Bool;
-                    res.rvalue_content = opr1_d >= opr2_d;
+                    res.rvalue_content = std::to_string(opr1_d >= opr2_d);
                 }
                 else if (operation == "<=") {
                     res.type = Type::Bool;
-                    res.rvalue_content = opr1_d <= opr2_d;
+                    res.rvalue_content = std::to_string(opr1_d <= opr2_d);
                 }
                 else if (operation == "&&") {
                     res.type = Type::Bool;
-                    res.rvalue_content = opr1_d && opr2_d;
+                    res.rvalue_content = std::to_string(opr1_d && opr2_d);
                 }
                 else if (operation == "||") {
                     res.type = Type::Bool;
-                    res.rvalue_content = opr1_d || opr2_d;
+                    res.rvalue_content = std::to_string(opr1_d || opr2_d);
                 }
                 else if (operation == "==") {
                     res.type = Type::Bool;
-                    res.rvalue_content = opr1_d == opr2_d;
+                    res.rvalue_content = std::to_string(opr1_d == opr2_d);
                 }
                 else if (operation == "!=") {
                     res.type = Type::Bool;
-                    res.rvalue_content = opr1_d != opr2_d;
+                    res.rvalue_content = std::to_string(opr1_d != opr2_d);
                 }
                 else if (operation == "=") {
-
+                    res.type = operand1.type;
+                    res.rvalue_content = operand2.rvalue_content;
                 }
+                if (operation == "+=" || operation == "-=" || operation == "/=" || operation == "*=" || operation == "%=" || operation == "=") {
+                    res.lvalue_content = operand1.lvalue_content;
+                    *res.lvalue_content = res.rvalue_content;
+                    res.lexeme = operand1.lexeme;
+                }
+                counting_stack.push(res);
             }
+            cur_index++;
         } else if (cur.action == Action::FunctionCall) {
 
         }
@@ -393,5 +415,6 @@ void Poliz::Run(SemanticAnalyzer& semantic, int index) {
             semantic.SetCurScope(cur.go);
             cur_index++;
         }
+
     }
 }
