@@ -292,7 +292,99 @@ void Poliz::Run(SemanticAnalyzer& semantic, int index) {
                     counting_stack.push(el);
                 }
             } else  { // binary operation
+                Element operand1 = counting_stack.top();
+                counting_stack.pop();
+                Element operand2 = counting_stack.top();
+                counting_stack.pop();
+                double opr1_d = stod(operand1.rvalue_content), opr2_d = stod(operand2.rvalue_content);
+                int opr1_i = stoi(operand1.rvalue_content), opr2_i = stoi(operand2.rvalue_content);
+                Element res;
+                if (operation == "+" || operation == "-" || operation == "/" || operation == "*" || operation == "|" || operation == "&" || operation == "%" || operation == "<<" || operation == ">>" ||
+                    operation == "+=" || operation == "-=" || operation == "/=" || operation == "*=" || operation == "%=") {
+                    if ((operand1.type == Type::Int || operand1.type == Type::Bool) && (operand2.type == Type::Int || operand2.type == Type::Bool)) {
+                        res.type == Type::Int;
+                        if (operation == "+" || operation == "+=") {
+                            res.rvalue_content = std::to_string(opr1_i + opr2_i);
+                        }
+                        else if (operation == "-" || operation == "-=") {
+                            res.rvalue_content = std::to_string(opr1_i - opr2_i);
+                        }
+                        else if (operation == "/" || operation == "/=") {
+                            res.rvalue_content = std::to_string(opr1_i / opr2_i);
+                        }
+                        else if (operation == "*" || operation == "*=") {
+                            res.rvalue_content = std::to_string(opr1_i * opr2_i);
+                        }
+                        else if (operation == "|") {
+                            res.rvalue_content = std::to_string(opr1_i | opr2_i);
+                        }
+                        else if (operation == "&") {
+                            res.rvalue_content = std::to_string(opr1_i & opr2_i);
+                        }
+                        else if (operation == "%" || operation == "%=") {
+                            res.rvalue_content = std::to_string(opr1_i % opr2_i);
+                        }
+                        else if (operation == "<<") {
+                            res.rvalue_content = std::to_string(opr1_i << opr2_i);
+                        }
+                        else if (operation == ">>") {
+                            res.rvalue_content = std::to_string(opr1_i >> opr2_i);
+                        }
+                    }
+                    else {
+                        res.type == Type::Double;
+                        if (operation == "+" || operation == "+=") {
+                            res.rvalue_content = std::to_string(opr1_d + opr2_d);
+                        }
+                        else if (operation == "-" || operation == "-=") {
+                            res.rvalue_content = std::to_string(opr1_d - opr2_d);
+                        }
+                        else if (operation == "/" || operation == "/=") {
+                            res.rvalue_content = std::to_string(opr1_d / opr2_d);
+                        }
+                        else if (operation == "*" || operation == "*=") {
+                            res.rvalue_content = std::to_string(opr1_d * opr2_d);
+                        }
+                        else {
+                            throw std::runtime_error("я где-то ошибся");
+                        }
+                    }
+                }
+                else if (operation == ">") {
+                    res.type = Type::Bool;
+                    res.rvalue_content = opr1_d > opr2_d;
+                }
+                else if (operation == "<") {
+                    res.type = Type::Bool;
+                    res.rvalue_content = opr1_d < opr2_d;
+                }
+                else if (operation == ">=") {
+                    res.type = Type::Bool;
+                    res.rvalue_content = opr1_d >= opr2_d;
+                }
+                else if (operation == "<=") {
+                    res.type = Type::Bool;
+                    res.rvalue_content = opr1_d <= opr2_d;
+                }
+                else if (operation == "&&") {
+                    res.type = Type::Bool;
+                    res.rvalue_content = opr1_d && opr2_d;
+                }
+                else if (operation == "||") {
+                    res.type = Type::Bool;
+                    res.rvalue_content = opr1_d || opr2_d;
+                }
+                else if (operation == "==") {
+                    res.type = Type::Bool;
+                    res.rvalue_content = opr1_d == opr2_d;
+                }
+                else if (operation == "!=") {
+                    res.type = Type::Bool;
+                    res.rvalue_content = opr1_d != opr2_d;
+                }
+                else if (operation == "=") {
 
+                }
             }
         } else if (cur.action == Action::FunctionCall) {
 
