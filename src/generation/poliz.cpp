@@ -68,6 +68,13 @@ void Poliz::PushMakeArray() {
     poliz.push_back(cur);
 }
 
+void Poliz::PushSetScope(SemanticAnalyzer::Node *sc) {
+    PolizElement el;
+    el.action = Action::SetScope;
+    el.go = sc;
+    poliz.push_back(el);
+}
+
 int Poliz::GetCur() {
     return poliz.size();
 }
@@ -98,12 +105,15 @@ void Poliz::PrintPoliz() {
             std::cout << "push";
         } else if (cur.action == Action::Array) {
             std::cout << "make_array";
+        } else if (cur.action == Action::SetScope) {
+            std::cout << "set_scope";
         }
         std::cout << "  ";
     }
 }
 
-void Poliz::Run(SemanticAnalyzer& semantic) {
+void Poliz::Run(SemanticAnalyzer& semantic, int index) {
+    cur_index = index;
     while (cur_index < poliz.size()) {
         PolizElement cur = poliz[cur_index];
         if (cur.action == Action::Element) {
@@ -112,16 +122,21 @@ void Poliz::Run(SemanticAnalyzer& semantic) {
                 if (type == Type::IntArray || type == Type::DoubleArray || type == Type::BoolArray || type == Type::CharArray) {
                     Element el;
                     el.lexeme = cur.lexeme;
+                    el.type = type;
                     counting_stack.push(el);
                 } else {
                     Element el;
                     el.lvalue_content = semantic.GetContent(cur.lexeme);
                     el.rvalue_content = *el.lvalue_content;
+                    el.type = type;
                     counting_stack.push(el);
                 }
             }
             else {
                 Element el;
+                if (cur.lexeme.GetType() == LexemeType::DoubleLiteral) el.type = Type::Double;
+                else if (cur.lexeme.GetType() == LexemeType::StringLiteral) el.type = Type::String;
+                else if (cur.lexeme.GetType() == LexemeType::Literal) el.type = Type::Int;
                 el.rvalue_content = cur.lexeme.GetContent();
                 counting_stack.push(el);
             }
@@ -149,11 +164,13 @@ void Poliz::Run(SemanticAnalyzer& semantic) {
         } else if(cur.action == Action::Input) {
             Element el = counting_stack.top();
             counting_stack.pop();
-            std::cin >> *el.lvalue_content;
+            std::getline(std::cin, *el.lvalue_content);
+            cur_index++;
         } else if (cur.action == Action::Output) {
             Element el = counting_stack.top();
             counting_stack.pop();
             std::cout << el.rvalue_content;
+            cur_index++;
         } else if (cur.action == Action::Array) {
             int sz = std::stoi(counting_stack.top().rvalue_content);
             counting_stack.pop();
@@ -165,9 +182,124 @@ void Poliz::Run(SemanticAnalyzer& semantic) {
             counting_stack.pop();
             semantic.ArrayPush(arr.lexeme, el.rvalue_content);
         } else if (cur.action == Action::Operation) {
-            //... Я не хочу это делать
+            std::string operation = cur.lexeme.GetContent();
+            if (operation.size() > 2) { // unary operation
+                Element operand = counting_stack.top();
+                counting_stack.pop();
+                Element el;
+                el.lvalue_content = operand.lvalue_content;
+                if (operation == "!prefix") {
+                    int ans = std::stoi(operand.rvalue_content);
+                    ans = !ans;
+                    el.type = Type::Bool;
+                    el.rvalue_content = std::to_string(ans);
+                    *el.lvalue_content = el.rvalue_content;
+                    counting_stack.push(el);
+                } else if (operation == "~prefix") {
+                    int ans = std::stoi(operand.rvalue_content);
+                    ans = ~ans;
+                    el.rvalue_content = std::to_string(ans);
+                    *el.lvalue_content = el.rvalue_content;
+                    el.type = Type::Int;
+                    counting_stack.push(el);
+                } else if (operation == "-prefix") {
+                    el.rvalue_content = "-" + el.rvalue_content;
+                    *el.lvalue_content = el.rvalue_content;
+                    el.type = operand.type;
+                    counting_stack.push(el);
+                } else if (operation == "+prefix") {
+                    el.rvalue_content = operand.rvalue_content;
+                    *el.lvalue_content = el.rvalue_content;
+                    el.type = operand.type;
+                    counting_stack.push(el);
+                } else if (operation == "++prefix") {
+                    if (operand.type == Type::Bool) {
+                        int ans = std::stoi(operand.rvalue_content);
+                        ++ans;
+                        if (ans != 0) ans = 1;
+                        el.rvalue_content = std::to_string(ans);
+                        *el.lvalue_content = el.rvalue_content;
+                    } else if (operand.type == Type::Int) {
+                        int ans = std::stoi(operand.rvalue_content);
+                        ++ans;
+                        el.rvalue_content = std::to_string(ans);
+                        *el.lvalue_content = el.rvalue_content;
+                        el.type = Type::Int;
+                    } else if (operand.type == Type::Double) {
+                        double ans = std::stod(operand.rvalue_content);
+                        ++ans;
+                        el.rvalue_content = std::to_string(ans);
+                        *el.lvalue_content = el.rvalue_content;
+                        el.type = Type::Double;
+                    }
+                    counting_stack.push(el);
+                } else if (operation == "--prefix") {
+                    if (operand.type == Type::Bool) {
+                        int ans = std::stoi(operand.rvalue_content);
+                        --ans;
+                        if (ans != 0) ans = 1;
+                        el.rvalue_content = std::to_string(ans);
+                        *el.lvalue_content = el.rvalue_content;
+                    } else if (operand.type == Type::Int) {
+                        int ans = std::stoi(operand.rvalue_content);
+                        --ans;
+                        el.rvalue_content = std::to_string(ans);
+                        *el.lvalue_content = el.rvalue_content;
+                        el.type = Type::Int;
+                    } else if (operand.type == Type::Double) {
+                        double ans = std::stod(operand.rvalue_content);
+                        --ans;
+                        el.rvalue_content = std::to_string(ans);
+                        *el.lvalue_content = el.rvalue_content;
+                        el.type = Type::Double;
+                    }
+                    counting_stack.push(el);
+                } else if (operation == "++postfix") {
+                    el.type = operand.type;
+                    el.rvalue_content = operand.rvalue_content;
+                    if (el.type == Type::Int) {
+                        int ans = std::stoi(operand.rvalue_content);
+                        ans++;
+                        *operand.lvalue_content = std::to_string(ans);
+                    } else if (el.type == Type::Bool) {
+                        int ans = std::stoi(operand.rvalue_content);
+                        ans++;
+                        if (ans != 0) ans = 1;
+                        *operand.lvalue_content = ans;
+                    } else if (el.type == Type::Double) {
+                        double ans = std::stod(operand.rvalue_content);
+                        ans++;
+                        *operand.lvalue_content = ans;
+                    }
+                    counting_stack.push(el);
+                } else if (operation == "--postfix") {
+                    el.type = operand.type;
+                    el.rvalue_content = operand.rvalue_content;
+                    if (el.type == Type::Int) {
+                        int ans = std::stoi(operand.rvalue_content);
+                        ans--;
+                        *operand.lvalue_content = std::to_string(ans);
+                    } else if (el.type == Type::Bool) {
+                        int ans = std::stoi(operand.rvalue_content);
+                        ans--;
+                        if (ans != 0) ans = 1;
+                        *operand.lvalue_content = ans;
+                    } else if (el.type == Type::Double) {
+                        double ans = std::stod(operand.rvalue_content);
+                        ans--;
+                        *operand.lvalue_content = ans;
+                    }
+                    counting_stack.push(el);
+                }
+            } else  { // binary operation
+
+            }
         } else if (cur.action == Action::FunctionCall) {
-            // Это я тоже не хочу делать
+
+        }
+        else if (cur.action == Action::SetScope) {
+            semantic.SetCurScope(cur.go);
+            cur_index++;
         }
     }
 }

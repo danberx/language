@@ -15,6 +15,8 @@ public:
     Type CheckId(const Lexeme& lex);
     void CreateScope();
     void ExitScope();
+    int GetScopes();
+    void EnterScope(int to);
     void PushFunc(std::string name, Type return_type, std::vector<Type>& formal_args, Lexeme& lex, int adress);
     bool CheckFun(std::string name, std::vector<Type>& fact_args, Lexeme& lex);
     void PushSemStack(Lexeme& lex);
@@ -37,6 +39,7 @@ public:
     void InsertSwitchCase(int a, Lexeme& lex);
     void PopSemStack();
     void ClearCases();
+
     std::string* GetContent(Lexeme& lex);
     Type GetFunctionType(std::string name);
     std::string* GetArrayContent(Lexeme& lex, int index);
@@ -82,14 +85,19 @@ private:
         FunctionBor bor;
     };
     FunctionsTable table_function;
+
+    Type cur_return_type;
+    Type cur_switch_type;
+public:
     struct Node {
         std::vector<Node*> next;
         Node* prev;
         TID data;
         Node(): prev(nullptr) {}
     };
-    Type cur_return_type;
-    Type cur_switch_type;
+    void SetCurScope(Node* sc);
+    Node* GetCurScope();
+private:
     Node * root, * cur_scope;
     BorSem functions;
     bool cur_have_return;

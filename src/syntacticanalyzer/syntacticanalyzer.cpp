@@ -54,6 +54,8 @@ SyntacticAnalyzer::SyntacticAnalyzer(const std::string &path1, const std::string
         Programm();
         std::cout << "OK!\n";
         poliz.PrintPoliz();
+        std::cout << "\n\n";
+        poliz.Run(semantic, start_programm);
     }
     catch(ErrorInCode& err) {
         std::cout << "SYNTAX ERROR\n";
@@ -65,6 +67,9 @@ SyntacticAnalyzer::SyntacticAnalyzer(const std::string &path1, const std::string
     }
     catch(std::string& err) {
         std::cout << err;
+    }
+    catch (...) {
+        std::cout << "Something wrong";
     }
 }
 
@@ -221,6 +226,7 @@ void SyntacticAnalyzer::PushArray() {
 
 void SyntacticAnalyzer::Function() {
     semantic.CreateScope();
+    poliz.PushSetScope(semantic.GetCurScope());
     NextLex();
     std::string name;
     std::vector<Type> args;
@@ -258,6 +264,7 @@ void SyntacticAnalyzer::Function() {
     }
     semantic.SetReturn(0);
     semantic.ExitScope();
+    poliz.PushSetScope(semantic.GetCurScope());
 }
 
 void SyntacticAnalyzer::Return() {
@@ -405,11 +412,13 @@ void SyntacticAnalyzer::If() {
         throw ErrorInCode(cur_lexeme);
     }
     semantic.CreateScope();
+    poliz.PushSetScope(semantic.GetCurScope());
     std::vector<int> set_adresses;
     Block();
     set_adresses.push_back(poliz.GetCur());
     poliz.Skip();
     semantic.ExitScope();
+    poliz.PushSetScope(semantic.GetCurScope());
     Lexeme next = lexer.PeekLex();
     while (next.IsServiceWord() && next.GetContent() == "elseif") {
         NextLex(2);
@@ -428,18 +437,22 @@ void SyntacticAnalyzer::If() {
             throw ErrorInCode(cur_lexeme);
         }
         semantic.CreateScope();
+        poliz.PushSetScope(semantic.GetCurScope());
         Block();
         set_adresses.push_back(poliz.GetCur());
         poliz.Skip();
         semantic.ExitScope();
+        poliz.PushSetScope(semantic.GetCurScope());
         next = lexer.PeekLex();
     }
     poliz.SetGoTo(false_pointer, poliz.GetCur(), true);
     if (next.IsServiceWord() && next.GetContent() == "else") {
         NextLex();
         semantic.CreateScope();
+        poliz.PushSetScope(semantic.GetCurScope());
         Block();
         semantic.ExitScope();
+        poliz.PushSetScope(semantic.GetCurScope());
     }
     int adress = poliz.GetCur();
     for (int i = 0; i < set_adresses.size(); ++i) {
@@ -468,6 +481,7 @@ void SyntacticAnalyzer::While() {
 
     }
     semantic.CreateScope();
+    poliz.PushSetScope(semantic.GetCurScope());
     semantic.EnterCycle();
     set_breaks.push({});
     set_continues.push({});
@@ -484,6 +498,7 @@ void SyntacticAnalyzer::While() {
     }
     semantic.ExitSycle();
     semantic.ExitScope();
+    poliz.PushSetScope(semantic.GetCurScope());
     set_continues.pop();
     set_breaks.pop();
 }
@@ -524,6 +539,7 @@ void SyntacticAnalyzer::For() {
         throw ErrorInCode(cur_lexeme);
     }
     semantic.CreateScope();
+    poliz.PushSetScope(semantic.GetCurScope());
     semantic.EnterCycle();
     poliz.SetGoTo(true_pointer, poliz.GetCur(), false);
     set_breaks.push({});
@@ -535,6 +551,7 @@ void SyntacticAnalyzer::For() {
     poliz.SetGoTo(false_pointer, end_adress, true);
     semantic.ExitSycle();
     semantic.ExitScope();
+    poliz.PushSetScope(semantic.GetCurScope());
     for (auto el: set_breaks.top()) {
         poliz.SetGoTo(el, end_adress, false);
     }
@@ -571,6 +588,7 @@ void SyntacticAnalyzer::Switch() {
     }
     NextLex();
     semantic.CreateScope();
+    poliz.PushSetScope(semantic.GetCurScope());
     if (!cur_lexeme.IsPunctuation() || cur_lexeme.GetContent() != "{") {
         throw ErrorInCode(cur_lexeme);
     }
@@ -582,6 +600,7 @@ void SyntacticAnalyzer::Switch() {
         throw ErrorInCode(cur_lexeme);
     }
     semantic.ExitScope();
+    poliz.PushSetScope(semantic.GetCurScope());
     semantic.ExitSwitch();
 }
 
@@ -607,11 +626,13 @@ void SyntacticAnalyzer::Cases() {
     poliz.Skip();
 
     semantic.CreateScope();
+    poliz.PushSetScope(semantic.GetCurScope());
     std::vector<int> adresses;
     Block();
     adresses.push_back(poliz.GetCur());
     poliz.Skip();
     semantic.ExitScope();
+    poliz.PushSetScope(semantic.GetCurScope());
     Lexeme next = lexer.PeekLex();
     while (next.IsServiceWord() && next.GetContent() == "case") {
         NextLex();
@@ -631,10 +652,12 @@ void SyntacticAnalyzer::Cases() {
         false_pointer = poliz.GetCur();
         poliz.Skip();
         semantic.CreateScope();
+        poliz.PushSetScope(semantic.GetCurScope());
         Block();
         adresses.push_back(poliz.GetCur());
         poliz.Skip();
         semantic.ExitScope();
+        poliz.PushSetScope(semantic.GetCurScope());
         next = lexer.PeekLex();
     }
     for (auto el: adresses) {
@@ -719,7 +742,9 @@ void SyntacticAnalyzer::Block() {
 }
 
 void SyntacticAnalyzer::Main() {
+    start_programm = poliz.GetCur();
     semantic.CreateScope();
+    poliz.PushSetScope(semantic.GetCurScope());
     semantic.SetType(Type::Int);
     NextLex();
     if (!cur_lexeme.IsServiceWord() || cur_lexeme.GetContent() != "main") {
@@ -734,9 +759,10 @@ void SyntacticAnalyzer::Main() {
     if (!cur_lexeme.IsBracket() || cur_lexeme.GetContent() != ")") {
         throw ErrorInCode(cur_lexeme);
     }
-    start_programm = poliz.GetCur();
+
     Block();
     semantic.ExitScope();
+    poliz.PushSetScope(semantic.GetCurScope());
 }
 
 void SyntacticAnalyzer::Expression() {

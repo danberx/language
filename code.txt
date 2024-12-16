@@ -1,11 +1,5 @@
-function int f() {
-    return 1;
-}
-
-function void fr(){
-return;
-}
-
 main() {
-    int a;
+    string s;
+    input(s);
+    output(s);
 }

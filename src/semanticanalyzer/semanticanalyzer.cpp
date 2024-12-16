@@ -47,6 +47,17 @@ void SemanticAnalyzer::ExitScope() {
     cur_scope = cur_scope->prev;
 }
 
+void SemanticAnalyzer::EnterScope(int to) {
+    if (cur_scope->next.size() >= to) {
+        throw std::exception();
+    }
+    cur_scope = cur_scope->next[to];
+}
+
+int SemanticAnalyzer::GetScopes() {
+    return cur_scope->next.size();
+}
+
 void SemanticAnalyzer::PushFunc(std::string name, Type return_type, std::vector<Type>& formal_args, Lexeme& lex, int adress) {
     table_function.PushFunc(name, return_type, formal_args, lex, adress);
 }
@@ -385,4 +396,12 @@ void SemanticAnalyzer::TID::SetSize(Lexeme &lex, int sz) {
 
 void SemanticAnalyzer::TID::Push(Lexeme &lex, std::string content) {
     identifiers.push(lex.GetContent(), content);
+}
+
+void SemanticAnalyzer::SetCurScope(SemanticAnalyzer::Node *sc) {
+    cur_scope = sc;
+}
+
+SemanticAnalyzer::Node* SemanticAnalyzer::GetCurScope() {
+    return cur_scope;
 }

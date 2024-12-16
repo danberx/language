@@ -10,5 +10,6 @@ enum class Action {
     FalseGoto,
     FunctionCall,
     PushArray,
-    Array
+    Array,
+    SetScope
 };

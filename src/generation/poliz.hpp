@@ -19,15 +19,17 @@ public:
     void PushFunctionCall(Lexeme& lex);
     void PushPushArray();
     void PushMakeArray();
+    void PushSetScope(SemanticAnalyzer::Node* sc);
     int GetCur();
     void PrintPoliz();
-    void Run(SemanticAnalyzer& semantic);
+    void Run(SemanticAnalyzer& semantic, int index);
 private:
     struct PolizElement {
         Action action;
         int goto_adress; // for goto (! and !F)
         bool is_lvalue; // for operands
         Lexeme lexeme;
+        SemanticAnalyzer::Node* go; // for SetScope
     };
     std::vector<PolizElement> poliz;
     struct Element {
